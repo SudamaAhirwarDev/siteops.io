@@ -25,4 +25,4 @@ Allow: /
 User-agent: Applebot-Extended
 Allow: /
 
-Sitemap: http://localhost/siteops.io/sitemap.xml
+Sitemap: https://siteops-io.onrender.com/sitemap.xml

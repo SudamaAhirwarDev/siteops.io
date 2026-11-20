@@ -3,7 +3,7 @@
 > An ultra-lightweight (<15KB) universal website growth, compliance, and cyber security suite targeting US and European businesses, agencies, and SaaS founders.
 
 ## Overview
-- **Primary Website:** http://localhost/siteops.io/
+- **Primary Website:** https://siteops-io.onrender.com/
 - **Script Weight:** <15KB pure Vanilla JavaScript, zero jQuery or heavy external runtime dependencies.
 - **Delivery:** Global Cloudflare Edge CDN.
 - **Trial:** 15-Day Free Trial (5 Tasks/Day, no credit card required).
@@ -19,5 +19,5 @@
 
 ## Universal Embed Code
 ```html
-<script src="http://localhost/siteops.io/loader.js?id=YOUR_SITE_KEY" async></script>
+<script src="https://siteops-io.onrender.com/loader.js?id=YOUR_SITE_KEY" async></script>
 ```

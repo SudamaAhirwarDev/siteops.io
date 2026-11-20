@@ -9,7 +9,7 @@ services:
       - key: CI_ENVIRONMENT
         value: production
       - key: app.baseURL
-        sync: false
+        value: https://siteops-io.onrender.com/
       - key: database.default.hostname
         sync: false
       - key: database.default.database
