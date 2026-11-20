@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Third-Party Client Website (Testing SiteOps Embed)</title>
+    <style>
+        body {
+            font-family: Georgia, serif;
+            margin: 40px auto;
+            max-width: 800px;
+            line-height: 1.6;
+            color: #333;
+            background: #fdfdfd;
+        }
+        /* Aggressive third-party CSS reset to test Shadow DOM isolation */
+        button {
+            color: red !important;
+            font-family: "Comic Sans MS", cursive !important;
+            border-radius: 0 !important;
+        }
+        a {
+            color: #2563eb;
+        }
+        .hero {
+            padding: 30px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>Welcome to Nordic Store</h1>
+        <p>This is a simulated third-party customer website testing the <strong>SiteOps universal embed script</strong>.</p>
+        <p><a href="#learn-more">Explore our products</a> &bull; <a href="#contact">Contact Support</a></p>
+    </div>
+
+    <h2>Sample Image with Missing Alt Tag</h2>
+    <p>The image below intentionally has no <code>alt</code> attribute. SiteOps Auto Alt-Tag Fixer should remediate it automatically.</p>
+    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80" title="Modern collaborative workspace meeting" style="max-width: 100%; height: auto; border-radius: 8px;">
+
+    <h2>Customer Feedback</h2>
+    <p>Notice the bottom-left floating accessibility icon and bottom-right verified social proof notification toast powered by SiteOps.</p>
+
+    <!-- SiteOps Universal Embed Script (<15KB) -->
+    <script src="http://localhost/siteops.io/loader.js?id=so_9f81a7b2e4c6" async></script>
+</body>
+</html>

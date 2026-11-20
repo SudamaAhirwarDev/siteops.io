@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="so-fav-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#1E1B4B" />
+    </linearGradient>
+    <linearGradient id="so-fav-s" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="50%" stop-color="#818CF8" />
+      <stop offset="100%" stop-color="#34D399" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#so-fav-bg)" />
+  <path d="M42 20.5 C42 16.5 37.5 14 32 14 C24.5 14 20 18 20 23.5 C20 30.5 28 32.5 33 34 C38 35.5 44 38 44 44 C44 50.5 38.5 54 32 54 C24 54 19.5 49.5 19.5 44.5" 
+        fill="none" 
+        stroke="url(#so-fav-s)" 
+        stroke-width="5" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+  <path d="M35 24 L27 34.5 H35.5 L30 44" 
+        fill="none" 
+        stroke="#FFFFFF" 
+        stroke-width="3" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+  <circle cx="47" cy="17" r="3.5" fill="#34D399" />
+</svg>

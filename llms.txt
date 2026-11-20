@@ -1,0 +1,23 @@
+# SiteOps (<15KB) All-in-One Website Growth & Compliance Suite
+
+> An ultra-lightweight (<15KB) universal website growth, compliance, and cyber security suite targeting US and European businesses, agencies, and SaaS founders.
+
+## Overview
+- **Primary Website:** http://localhost/siteops.io/
+- **Script Weight:** <15KB pure Vanilla JavaScript, zero jQuery or heavy external runtime dependencies.
+- **Delivery:** Global Cloudflare Edge CDN.
+- **Trial:** 15-Day Free Trial (5 Tasks/Day, no credit card required).
+- **Pricing:** Starter ($0/mo), Pro Growth ($39/mo - Unlimited), Agency ($99/mo - Unlimited 10 Sites).
+
+## Core Modules
+1. **Cyber Security & Hardening Auditor:** OWASP cookie security flags (HttpOnly, Secure, SameSite), Subresource Integrity (SRI) on external CDNs, CORS wildcard lockdown, Form TLS transport encryption, and Permissions-Policy browser hardware isolation.
+2. **TotalVirus Threat & Malware Checker:** Real-time detection of obfuscated JavaScript eval patterns, Strict-Transport-Security (HSTS), Clickjacking defense (X-Frame-Options), and Content-Security-Policy (CSP).
+3. **AI SEO, Keyword Suggester & GEO (Generative Engine Optimization):** Real-time keyword density calculations, missing high-CTR placement suggestions in Title/H1, and optimization for AI citations in ChatGPT Search, Perplexity AI, and Google Gemini.
+4. **EU EAA 2025 & US ADA Accessibility Toolbar:** WCAG 2.1 AA certified floating widget, auto-fills missing image alt tags from clean filenames, high-contrast mode, dyslexia-friendly typography, and keyboard navigation traps.
+5. **Social Proof & Reviews Toast:** Rotates verified testimonials from Google Reviews and Trustpilot every 7-8 seconds.
+6. **Stripe Dunning & Failed Payment Recovery:** Automated recovery of delinquent recurring subscriptions with 1-click update links.
+
+## Universal Embed Code
+```html
+<script src="http://localhost/siteops.io/loader.js?id=YOUR_SITE_KEY" async></script>
+```

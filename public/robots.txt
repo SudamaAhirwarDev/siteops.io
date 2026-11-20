@@ -1,0 +1,28 @@
+# SiteOps - All-in-One Website Growth & Compliance Suite
+# Directives for Traditional Search Engines & AI Answer Engines
+
+User-agent: *
+Allow: /
+Allow: /assets/
+Allow: /favicon.svg
+Disallow: /dashboard/
+Disallow: /modules/
+Disallow: /api/webhook/
+
+# Explicitly Allow AI Answer Engine Crawlers for AEO / GEO
+User-agent: GPTBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+Sitemap: http://localhost/siteops.io/sitemap.xml

@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: siteops
+    env: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: CI_ENVIRONMENT
+        value: production
+      - key: app.baseURL
+        sync: false
+      - key: database.default.hostname
+        sync: false
+      - key: database.default.database
+        sync: false
+      - key: database.default.username
+        sync: false
+      - key: database.default.password
+        sync: false
