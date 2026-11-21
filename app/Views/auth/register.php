@@ -27,20 +27,24 @@
         }
     </script>
     <style>
-        html, body {
+        html {
             height: 100%;
-            overflow-y: auto !important;
+        }
+        body {
+            min-height: 100%;
+            margin: 0;
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col items-center justify-center py-4 sm:py-6 px-4 selection:bg-brand-500 selection:text-white relative">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col items-center py-4 sm:py-8 px-4 selection:bg-brand-500 selection:text-white relative">
 
     <!-- Ambient Calm Glow -->
     <div class="fixed -top-40 -left-40 w-96 h-96 bg-indigo-100/60 rounded-full blur-3xl pointer-events-none"></div>
     <div class="fixed -bottom-40 -right-40 w-96 h-96 bg-purple-100/50 rounded-full blur-3xl pointer-events-none"></div>
 
-    <div class="w-full max-w-md relative z-10 my-auto">
+    <main class="w-full max-w-md relative z-10 my-auto py-2">
         <!-- Brand Header -->
         <div class="text-center mb-3">
             <a href="<?= site_url('/') ?>" class="inline-flex items-center gap-2 group">
@@ -65,7 +69,7 @@
         <?php endif; ?>
 
         <!-- Register Card -->
-        <div class="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-6 shadow-soft-lg relative">
+        <div class="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-soft-lg relative">
             <form action="<?= site_url('register') ?>" method="POST" class="space-y-2.5 sm:space-y-3">
                 <?= csrf_field() ?>
 
@@ -100,23 +104,23 @@
                 </div>
 
                 <div class="pt-1">
-                    <button type="submit" class="w-full py-2.5 px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 shadow-soft-sm transition-all flex items-center justify-center gap-1.5">
+                    <button type="submit" class="w-full py-2.5 px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 shadow-soft-sm hover:shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                         <span>Create Free Account</span>
                         <span>&rarr;</span>
                     </button>
                 </div>
             </form>
 
-            <div class="mt-2.5 text-center">
+            <div class="mt-2 text-center">
                 <span class="text-[11px] text-slate-400">15-Day Free Trial &bull; 5 Tasks/Day &bull; No card required</span>
             </div>
         </div>
 
         <!-- Footer -->
-        <p class="text-center text-xs text-slate-500 mt-3">
+        <p class="text-center text-xs text-slate-500 mt-3 pb-4">
             Already have an account? 
             <a href="<?= site_url('login') ?>" class="font-bold text-indigo-600 hover:text-indigo-700 underline">Sign in</a>
         </p>
-    </div>
+    </main>
 </body>
 </html>

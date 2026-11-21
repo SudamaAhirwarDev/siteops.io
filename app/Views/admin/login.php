@@ -31,20 +31,24 @@
         }
     </script>
     <style>
-        html, body {
+        html {
             height: 100%;
-            overflow-y: auto !important;
+        }
+        body {
+            min-height: 100%;
+            margin: 0;
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col items-center justify-center py-6 px-4 selection:bg-indigo-500 selection:text-white relative">
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col items-center py-6 px-4 selection:bg-indigo-500 selection:text-white relative">
 
     <!-- Ambient High-Tech Glow -->
     <div class="fixed -top-40 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
     <div class="fixed -bottom-40 -right-40 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl pointer-events-none"></div>
 
-    <div class="w-full max-w-md relative z-10 my-auto">
+    <main class="w-full max-w-md relative z-10 my-auto py-2">
         <!-- Brand Header -->
         <div class="text-center mb-5">
             <a href="<?= site_url('/') ?>" class="inline-flex items-center gap-2.5 group">
@@ -113,7 +117,7 @@
         </div>
 
         <!-- Navigation Links -->
-        <div class="flex items-center justify-between text-xs text-slate-500 mt-4 px-2">
+        <div class="flex items-center justify-between text-xs text-slate-500 mt-4 px-2 pb-4">
             <a href="<?= site_url('login') ?>" class="hover:text-indigo-400 transition-colors">
                 &larr; Standard User Login
             </a>
@@ -121,6 +125,6 @@
                 Public Website
             </a>
         </div>
-    </div>
+    </main>
 </body>
 </html>
