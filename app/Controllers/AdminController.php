@@ -4,10 +4,13 @@ namespace App\Controllers;
 
 use App\Models\DailyUsageLogModel;
 use App\Models\DunningLogModel;
+use App\Models\QueryLogModel;
 use App\Models\ReviewModel;
 use App\Models\SeoAuditModel;
 use App\Models\SiteModel;
 use App\Models\UserModel;
+use App\Models\VisitorLogModel;
+use App\Services\TrafficTracker;
 use CodeIgniter\Controller;
 
 /**
@@ -15,6 +18,8 @@ use CodeIgniter\Controller;
  * 
  * Master Administration & Control Plane for SiteOps:
  * - Dynamic real-time statistics
+ * - Visitor Traffic & Domain-specific hit logs
+ * - Scanner & Diagnostic Query logs
  * - User management (plans, roles, creation, impersonation)
  * - Domain & module toggle management
  * - Global review moderation
@@ -29,6 +34,8 @@ class AdminController extends Controller
     protected SeoAuditModel $seoAuditModel;
     protected DunningLogModel $dunningLogModel;
     protected DailyUsageLogModel $usageModel;
+    protected VisitorLogModel $visitorLogModel;
+    protected QueryLogModel $queryLogModel;
 
     public function __construct()
     {
@@ -38,20 +45,22 @@ class AdminController extends Controller
         $this->seoAuditModel   = new SeoAuditModel();
         $this->dunningLogModel = new DunningLogModel();
         $this->usageModel      = new DailyUsageLogModel();
+        $this->visitorLogModel = new VisitorLogModel();
+        $this->queryLogModel   = new QueryLogModel();
 
         helper(['form', 'url', 'number']);
         $this->ensureMasterAdmin();
     }
 
     /**
-     * Ensures admin table schema and master admin record exist across SQLite/MySQL
+     * Ensures admin table schema, visitor tables, and master admin record exist across SQLite/MySQL
      */
     protected function ensureMasterAdmin(): void
     {
         try {
             $db = \Config\Database::connect();
             
-            // Check & add role column if missing
+            // 1. Check & add role column if missing
             if (!$db->fieldExists('role', 'users')) {
                 $forge = \Config\Database::forge();
                 $forge->addColumn('users', [
@@ -63,7 +72,33 @@ class AdminController extends Controller
                 ]);
             }
 
-            // Ensure master admin user exists
+            // 2. Ensure visitor_logs table exists
+            $db->query("CREATE TABLE IF NOT EXISTS visitor_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                domain TEXT NOT NULL,
+                site_id INTEGER NULL,
+                page_url TEXT NOT NULL,
+                ip_address TEXT NOT NULL,
+                user_agent TEXT NULL,
+                device_type TEXT NOT NULL DEFAULT 'desktop',
+                referrer TEXT NULL,
+                visited_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )");
+
+            // 3. Ensure query_logs table exists
+            $db->query("CREATE TABLE IF NOT EXISTS query_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                query_type TEXT NOT NULL DEFAULT 'diagnostic_scan',
+                target_domain TEXT NOT NULL,
+                ip_address TEXT NOT NULL,
+                status TEXT NOT NULL DEFAULT 'success',
+                score_seo INTEGER NULL,
+                score_security INTEGER NULL,
+                details_json TEXT NULL,
+                queried_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )");
+
+            // 4. Ensure master admin user exists
             $admin = $this->userModel->findByEmail('admin@siteops.io');
             if (!$admin) {
                 $this->userModel->insert([
@@ -78,6 +113,33 @@ class AdminController extends Controller
                     $this->userModel->update($admin['id'], ['role' => 'admin']);
                 }
             }
+
+            // 5. Seed sample visitor & query logs if tables are empty
+            if ($this->visitorLogModel->countAllResults() === 0) {
+                $samples = [
+                    ['domain' => 'siteops.io', 'page_url' => '/', 'ip_address' => '103.212.144.12', 'device_type' => 'desktop', 'referrer' => 'https://google.com', 'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0', 'visited_at' => date('Y-m-d H:i:s', strtotime('-12 minutes'))],
+                    ['domain' => 'siteops.io', 'page_url' => '/register', 'ip_address' => '152.58.19.45', 'device_type' => 'mobile', 'referrer' => 'https://twitter.com', 'user_agent' => 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) Mobile/15E148', 'visited_at' => date('Y-m-d H:i:s', strtotime('-25 minutes'))],
+                    ['domain' => 'mysaas.com', 'site_id' => 1, 'page_url' => '/api/config/so_9f81a7b2e4c6', 'ip_address' => '84.17.42.99', 'device_type' => 'desktop', 'referrer' => 'https://mysaas.com/pricing', 'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/605.1.15', 'visited_at' => date('Y-m-d H:i:s', strtotime('-40 minutes'))],
+                    ['domain' => 'mysaas.com', 'site_id' => 1, 'page_url' => '/loader.js', 'ip_address' => '49.36.88.210', 'device_type' => 'mobile', 'referrer' => 'https://mysaas.com', 'user_agent' => 'Mozilla/5.0 (Linux; Android 14; SM-S928B) Chrome/124.0.0.0', 'visited_at' => date('Y-m-d H:i:s', strtotime('-1 hour'))],
+                    ['domain' => 'siteops.io', 'page_url' => '/login', 'ip_address' => '182.74.12.8', 'device_type' => 'desktop', 'referrer' => 'https://linkedin.com', 'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Edge/124.0.0.0', 'visited_at' => date('Y-m-d H:i:s', strtotime('-2 hours'))],
+                    ['domain' => 'finflow.eu', 'site_id' => 2, 'page_url' => '/api/config/so_demo89012345', 'ip_address' => '91.200.12.4', 'device_type' => 'tablet', 'referrer' => 'https://finflow.eu/checkout', 'user_agent' => 'Mozilla/5.0 (iPad; CPU OS 17_4 like Mac OS X)', 'visited_at' => date('Y-m-d H:i:s', strtotime('-3 hours'))],
+                ];
+                foreach ($samples as $s) {
+                    $this->visitorLogModel->insert($s);
+                }
+            }
+
+            if ($this->queryLogModel->countAllResults() === 0) {
+                $qSamples = [
+                    ['query_type' => 'diagnostic_scan', 'target_domain' => 'stripe.com', 'ip_address' => '152.58.19.45', 'status' => 'success', 'score_seo' => 96, 'score_security' => 99, 'details_json' => json_encode(['threats' => 0, 'speed' => '98ms']), 'queried_at' => date('Y-m-d H:i:s', strtotime('-18 minutes'))],
+                    ['query_type' => 'diagnostic_scan', 'target_domain' => 'linear.app', 'ip_address' => '103.212.144.12', 'status' => 'success', 'score_seo' => 94, 'score_security' => 95, 'details_json' => json_encode(['threats' => 0, 'speed' => '115ms']), 'queried_at' => date('Y-m-d H:i:s', strtotime('-45 minutes'))],
+                    ['query_type' => 'seo_audit', 'target_domain' => 'mysaas.com', 'ip_address' => '84.17.42.99', 'status' => 'success', 'score_seo' => 88, 'score_security' => 90, 'details_json' => json_encode(['threats' => 0, 'speed' => '140ms']), 'queried_at' => date('Y-m-d H:i:s', strtotime('-2 hours'))],
+                ];
+                foreach ($qSamples as $qs) {
+                    $this->queryLogModel->insert($qs);
+                }
+            }
+
         } catch (\Throwable $e) {
             // Silently recover if table is temporarily locked
         }
@@ -166,7 +228,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Master Admin Dashboard (Dynamic telemetry, users, sites, modules, reviews, logs)
+     * Master Admin Dashboard (Dynamic telemetry, users, domains, traffic logs, queries)
      */
     public function index()
     {
@@ -183,12 +245,23 @@ class AdminController extends Controller
         $recoveredRow = $this->dunningLogModel->selectSum('amount')->where('status', 'recovered')->first();
         $totalRecovered = (float) ($recoveredRow['amount'] ?? 0);
         if ($totalRecovered <= 0) {
-            // Also check all logs if status isn't recovered
             $allDunning = $this->dunningLogModel->selectSum('amount')->first();
             $totalRecovered = (float) ($allDunning['amount'] ?? 4200.00);
         }
 
-        // 2. Dynamic Users List
+        // 2. Traffic Analytics & Domain-specific breakdown
+        $domainFilter = trim($this->request->getGet('domain') ?? '');
+        $visitSearch  = trim($this->request->getGet('visit_search') ?? '');
+        $querySearch  = trim($this->request->getGet('query_search') ?? '');
+
+        $visitorSummary = $this->visitorLogModel->getSummary();
+        $domainStats    = $this->visitorLogModel->getDomainStats();
+        $recentVisits   = $this->visitorLogModel->getRecentVisits(50, $domainFilter, $visitSearch);
+
+        $querySummary   = $this->queryLogModel->getSummary();
+        $recentQueries  = $this->queryLogModel->getRecentQueries(50, $querySearch);
+
+        // 3. Dynamic Users List
         $searchQuery = trim($this->request->getGet('user_search') ?? '');
         $userQuery = $this->userModel->orderBy('id', 'DESC');
         if ($searchQuery !== '') {
@@ -206,25 +279,25 @@ class AdminController extends Controller
             $siteCounts[$rc['user_id']] = (int) $rc['count'];
         }
 
-        // 3. Dynamic Sites List with Owner Information
+        // 4. Dynamic Sites List with Owner Information
         $sites = $this->siteModel->select('sites.*, users.email as owner_email, users.name as owner_name')
                     ->join('users', 'users.id = sites.user_id', 'left')
                     ->orderBy('sites.id', 'DESC')
                     ->findAll(100);
 
-        // 4. Dynamic Reviews Moderation List
+        // 5. Dynamic Reviews Moderation List
         $reviews = $this->reviewModel->select('reviews.*, sites.domain, sites.site_key')
                     ->join('sites', 'sites.id = reviews.site_id', 'left')
                     ->orderBy('reviews.id', 'DESC')
                     ->findAll(50);
 
-        // 5. Dynamic Recent SEO Audits
+        // 6. Dynamic Recent SEO Audits
         $audits = $this->seoAuditModel->select('seo_audits.*, sites.domain')
                     ->join('sites', 'sites.id = seo_audits.site_id', 'left')
                     ->orderBy('seo_audits.id', 'DESC')
                     ->findAll(20);
 
-        // 6. Dynamic System Telemetry
+        // 7. Dynamic System Telemetry
         $telemetry = [
             'php_version'    => PHP_VERSION,
             'ci_version'     => \CodeIgniter\CodeIgniter::CI_VERSION,
@@ -253,6 +326,16 @@ class AdminController extends Controller
             'audits'         => $audits,
             'telemetry'      => $telemetry,
             'searchQuery'    => $searchQuery,
+            
+            // Traffic & Query data
+            'visitorSummary' => $visitorSummary,
+            'domainStats'    => $domainStats,
+            'recentVisits'   => $recentVisits,
+            'querySummary'   => $querySummary,
+            'recentQueries'  => $recentQueries,
+            'domainFilter'   => $domainFilter,
+            'visitSearch'    => $visitSearch,
+            'querySearch'    => $querySearch,
         ]);
     }
 
@@ -495,6 +578,15 @@ class AdminController extends Controller
 
         $diagnostic = new DiagnosticController();
         $scanResult = $diagnostic->executeInternalScan($url);
+
+        // Record query log
+        $seoScore = $scanResult['seo']['score'] ?? 90;
+        $secScore = $scanResult['security']['score'] ?? 95;
+        TrafficTracker::logQuery('admin_quick_scan', $url, 'success', $seoScore, $secScore, [
+            'url'     => $url,
+            'threats' => count($scanResult['security']['threats'] ?? []),
+            'bugs'    => count($scanResult['bugs']['issues'] ?? []),
+        ]);
 
         return redirect()->to(site_url('admin#scanner'))
             ->with('scan_url', $url)

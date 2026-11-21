@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use CodeIgniter\Controller;
 use App\Services\DiagnosticService;
+use App\Services\TrafficTracker;
 
 /**
  * Class DiagnosticController
@@ -85,6 +86,15 @@ class DiagnosticController extends Controller
         }
 
         $result = $this->diagnosticService->scan($url);
+
+        // Record real-time diagnostic query in query_logs
+        $seoScore = $result['seo']['score'] ?? null;
+        $secScore = $result['security']['score'] ?? null;
+        TrafficTracker::logQuery('diagnostic_scan', $url, 'success', $seoScore, $secScore, [
+            'url'     => $url,
+            'threats' => count($result['security']['threats'] ?? []),
+            'bugs'    => count($result['bugs']['issues'] ?? []),
+        ]);
 
         return $this->response
             ->setHeader('Access-Control-Allow-Origin', '*')

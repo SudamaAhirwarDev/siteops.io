@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use CodeIgniter\Controller;
+use App\Services\TrafficTracker;
 
 /**
  * Class Home
@@ -19,6 +20,9 @@ class Home extends Controller
      */
     public function index(): string
     {
+        // Record public site visit
+        TrafficTracker::logVisit('siteops.io', null, '/');
+
         $data = [
             'page_title' => 'SiteOps — Ultra-Lightweight Growth & Compliance Suite',
             'meta_description' => 'Replace 4 expensive subscriptions with one lightweight script (<15KB). EU/ADA Accessibility, Social Proof Reviews, AI SEO/GEO Auditor, and Failed Payment Recovery.',

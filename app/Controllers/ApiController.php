@@ -6,6 +6,7 @@ use App\Models\SiteModel;
 use App\Models\ReviewModel;
 use App\Models\DunningLogModel;
 use App\Models\UserModel;
+use App\Services\TrafficTracker;
 use CodeIgniter\Controller;
 
 /**
@@ -68,6 +69,9 @@ class ApiController extends Controller
                     'message' => 'Site configuration not found for provided site_key.',
                 ]);
         }
+
+        // Record real-time client domain visit
+        TrafficTracker::logVisit($site['domain'], (int) $site['id'], '/api/config/' . $siteKey);
 
         $accessibilityActive = (bool) $site['module_accessibility'];
         $reviewsActive       = (bool) $site['module_reviews'];
@@ -221,6 +225,16 @@ class ApiController extends Controller
      */
     public function loaderScript()
     {
+        $ref = $this->request->getServer('HTTP_REFERER');
+        $domain = 'siteops.io';
+        if ($ref) {
+            $parsed = parse_url($ref);
+            if (!empty($parsed['host'])) {
+                $domain = $parsed['host'];
+            }
+        }
+        TrafficTracker::logVisit($domain, null, '/loader.js');
+
         $loaderPath = FCPATH . 'loader.js';
         if (!file_exists($loaderPath)) {
             $loaderPath = __DIR__ . '/../../public/loader.js';

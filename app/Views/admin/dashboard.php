@@ -61,13 +61,14 @@
                 </a>
 
                 <!-- Quick Navigation Anchor Links (Desktop) -->
-                <nav class="hidden lg:flex items-center gap-1 text-xs font-semibold">
-                    <a href="#stats" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Overview</a>
-                    <a href="#users" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Users (<?= count($users) ?>)</a>
-                    <a href="#sites" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Domains (<?= count($sites) ?>)</a>
-                    <a href="#reviews" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Reviews (<?= count($reviews) ?>)</a>
-                    <a href="#scanner" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Live Scanner</a>
-                    <a href="#telemetry" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Telemetry</a>
+                <nav class="hidden xl:flex items-center gap-1 text-xs font-semibold">
+                    <a href="#stats" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Overview</a>
+                    <a href="#traffic" class="px-2.5 py-1.5 rounded-lg text-emerald-400 font-bold hover:text-white hover:bg-slate-800 transition-colors">🔥 Domain Visits (<?= $visitorSummary['total_visits'] ?>)</a>
+                    <a href="#queries" class="px-2.5 py-1.5 rounded-lg text-indigo-400 font-bold hover:text-white hover:bg-slate-800 transition-colors">⚡ Queries (<?= $querySummary['total_queries'] ?>)</a>
+                    <a href="#users" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Users (<?= count($users) ?>)</a>
+                    <a href="#sites" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Domains (<?= count($sites) ?>)</a>
+                    <a href="#reviews" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Reviews (<?= count($reviews) ?>)</a>
+                    <a href="#scanner" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Live Scanner</a>
                 </nav>
             </div>
 
@@ -128,7 +129,31 @@
 
         <!-- SECTION: Dynamic Overview & Telemetry Metrics -->
         <section id="stats" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
-            <!-- Metric 1: Total Users -->
+            <!-- Metric 1: Total Visits -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-soft-xs">
+                <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
+                    <span>Total Visits</span>
+                    <span class="text-emerald-400">🔥</span>
+                </div>
+                <div class="mt-2 text-2xl font-black text-emerald-400 font-mono"><?= number_format($visitorSummary['total_visits']) ?></div>
+                <div class="mt-1 flex items-center gap-2 text-[11px] text-slate-400">
+                    <span class="text-white font-semibold"><?= $visitorSummary['unique_visitors'] ?> Unique IPs</span>
+                    <span>&bull;</span>
+                    <span class="text-emerald-400">+<?= $visitorSummary['today_visits'] ?> Today</span>
+                </div>
+            </div>
+
+            <!-- Metric 2: Total Queries -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-soft-xs">
+                <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
+                    <span>Scans &amp; Queries</span>
+                    <span class="text-indigo-400">⚡</span>
+                </div>
+                <div class="mt-2 text-2xl font-black text-indigo-400 font-mono"><?= number_format($querySummary['total_queries']) ?></div>
+                <div class="mt-1 text-[11px] text-slate-400">+<?= $querySummary['today_queries'] ?> Queries Today</div>
+            </div>
+
+            <!-- Metric 3: Total Users -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-soft-xs">
                 <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
                     <span>Registered Users</span>
@@ -142,7 +167,7 @@
                 </div>
             </div>
 
-            <!-- Metric 2: Connected Sites -->
+            <!-- Metric 4: Connected Domains -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-soft-xs">
                 <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
                     <span>Monitored Domains</span>
@@ -152,44 +177,268 @@
                 <div class="mt-1 text-[11px] text-slate-400">Active &lt;15KB Loaders</div>
             </div>
 
-            <!-- Metric 3: Customer Reviews -->
+            <!-- Metric 5: Customer Reviews -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-soft-xs">
                 <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
-                    <span>Social Proof Reviews</span>
+                    <span>Customer Reviews</span>
                     <span class="text-amber-400">★</span>
                 </div>
                 <div class="mt-2 text-2xl font-black text-white font-mono"><?= number_format($totalReviews) ?></div>
                 <div class="mt-1 text-[11px] text-emerald-400 font-semibold"><?= $activeReviews ?> Published Live</div>
             </div>
 
-            <!-- Metric 4: SEO & GEO Audits -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-soft-xs">
-                <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
-                    <span>AI SEO &amp; GEO Audits</span>
-                    <span class="text-indigo-400">⚡</span>
-                </div>
-                <div class="mt-2 text-2xl font-black text-white font-mono"><?= number_format($totalAudits) ?></div>
-                <div class="mt-1 text-[11px] text-slate-400">Page Scans Run</div>
-            </div>
-
-            <!-- Metric 5: Dunning Recovered -->
+            <!-- Metric 6: Stripe Dunning Recovered -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-soft-xs">
                 <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
                     <span>Stripe Recovery</span>
                     <span class="text-emerald-400">💰</span>
                 </div>
                 <div class="mt-2 text-2xl font-black text-emerald-400 font-mono">$<?= number_format($totalRecovered, 0) ?></div>
-                <div class="mt-1 text-[11px] text-slate-400">Dunning Value Saved</div>
+                <div class="mt-1 text-[11px] text-slate-400">Saved Revenue</div>
+            </div>
+        </section>
+
+        <!-- ======================================================================== -->
+        <!-- SECTION 1: VISITOR TRAFFIC & DOMAIN ACCESS LOGS                          -->
+        <!-- ======================================================================== -->
+        <section id="traffic" class="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-soft-md space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-800">
+                <div>
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <span>🔥 Visitor Traffic &amp; Domain Analytics</span>
+                        <span class="text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700/60 font-semibold">Live Traffic Logs</span>
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Check kitne log aaye, kis specific domain ke liye aaye, unka device, IP address, visited URL, aur referrer.</p>
+                </div>
+
+                <!-- Domain Filter & Search Bar -->
+                <form method="GET" action="<?= site_url('admin#traffic') ?>" class="flex items-center gap-2 flex-wrap">
+                    <select name="domain" onchange="this.form.submit()" class="bg-slate-950 border border-slate-700 text-slate-200 rounded-xl px-3 py-1.5 text-xs font-mono focus:outline-none focus:border-indigo-500">
+                        <option value="">All Target Domains (<?= count($domainStats) ?>)</option>
+                        <?php foreach ($domainStats as $ds): ?>
+                            <option value="<?= esc($ds['domain']) ?>" <?= ($domainFilter === $ds['domain']) ? 'selected' : '' ?>>
+                                <?= esc($ds['domain']) ?> (<?= $ds['total_hits'] ?> hits)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+
+                    <input type="text" name="visit_search" value="<?= esc($visitSearch) ?>" placeholder="Search IP, URL, or Referrer..."
+                           class="bg-slate-950 border border-slate-700 text-slate-200 rounded-xl px-3 py-1.5 text-xs placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-44 font-mono">
+
+                    <button type="submit" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold transition-colors">
+                        Filter
+                    </button>
+                    <?php if ($domainFilter !== '' || $visitSearch !== ''): ?>
+                        <a href="<?= site_url('admin#traffic') ?>" class="text-xs text-rose-400 hover:underline px-1">Clear</a>
+                    <?php endif; ?>
+                </form>
             </div>
 
-            <!-- Metric 6: Server Health -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-soft-xs">
-                <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
-                    <span>System Status</span>
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <!-- Domain-Specific Aggregate Traffic Breakdown Cards -->
+            <div>
+                <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 block mb-3">Domain-Wise Traffic Breakdown</span>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    <?php if (empty($domainStats)): ?>
+                        <div class="col-span-full py-4 text-center text-xs text-slate-500">No domain traffic recorded yet.</div>
+                    <?php else: ?>
+                        <?php foreach ($domainStats as $ds): ?>
+                            <a href="<?= site_url('admin?domain=' . urlencode($ds['domain']) . '#traffic') ?>" class="p-3.5 rounded-2xl bg-slate-950 border <?= ($domainFilter === $ds['domain']) ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-800 hover:border-slate-700' ?> transition-all block group">
+                                <div class="flex items-center justify-between text-xs">
+                                    <div class="font-bold text-white group-hover:text-emerald-400 transition-colors font-mono truncate max-w-[150px]">
+                                        <?= esc($ds['domain']) ?>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-700/60 text-emerald-300 font-mono font-bold text-[10px]">
+                                        <?= number_format($ds['total_hits']) ?> hits
+                                    </span>
+                                </div>
+                                <div class="mt-2.5 flex items-center justify-between text-[11px] text-slate-400">
+                                    <span><?= $ds['unique_ips'] ?> Unique Visitors</span>
+                                    <span class="text-[10px] text-slate-500 font-mono"><?= date('H:i, M d', strtotime($ds['last_seen'])) ?></span>
+                                </div>
+                            </a>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
-                <div class="mt-2 text-base font-bold text-white font-mono">100% HEALTHY</div>
-                <div class="mt-1 text-[11px] text-indigo-400 font-mono"><?= esc($telemetry['environment']) ?></div>
+            </div>
+
+            <!-- Detailed Real-Time Access Logs Table -->
+            <div class="pt-4 border-t border-slate-800">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">
+                        Real-Time Visitor Log Entries <?= $domainFilter ? "for [" . esc($domainFilter) . "]" : '' ?> (<?= count($recentVisits) ?> Shown)
+                    </span>
+                    <span class="text-[11px] text-slate-500 font-mono">Updated Real-Time</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="text-[11px] uppercase tracking-wider text-slate-500 border-b border-slate-800 bg-slate-950/60 font-mono">
+                            <tr>
+                                <th class="py-2.5 px-3">Visited Time</th>
+                                <th class="py-2.5 px-3">Target Domain</th>
+                                <th class="py-2.5 px-3">Visited Endpoint / Path</th>
+                                <th class="py-2.5 px-3">Visitor IP</th>
+                                <th class="py-2.5 px-3">Device &amp; Browser</th>
+                                <th class="py-2.5 px-3">Referrer Source</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/80 font-mono text-[11px]">
+                            <?php if (empty($recentVisits)): ?>
+                                <tr>
+                                    <td colspan="6" class="py-6 text-center text-slate-500 font-sans">No visitor logs found matching your filter.</td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($recentVisits as $v): ?>
+                                    <tr class="hover:bg-slate-800/40 transition-colors">
+                                        <td class="py-2.5 px-3 text-slate-400 whitespace-nowrap">
+                                            <?= date('M d, H:i:s', strtotime($v['visited_at'])) ?>
+                                        </td>
+                                        <td class="py-2.5 px-3 font-bold text-white">
+                                            <span class="px-2 py-0.5 rounded bg-indigo-950/80 border border-indigo-700/50 text-indigo-300 text-[10px]">
+                                                <?= esc($v['domain']) ?>
+                                            </span>
+                                        </td>
+                                        <td class="py-2.5 px-3 text-slate-200 truncate max-w-xs" title="<?= esc($v['page_url']) ?>">
+                                            <span class="text-emerald-400 font-bold"><?= esc($v['page_url']) ?></span>
+                                        </td>
+                                        <td class="py-2.5 px-3 text-indigo-300">
+                                            <?= esc($v['ip_address']) ?>
+                                        </td>
+                                        <td class="py-2.5 px-3">
+                                            <?php 
+                                                $devIcon = match($v['device_type'] ?? 'desktop') {
+                                                    'mobile' => '📱 Mobile',
+                                                    'tablet' => '📟 Tablet',
+                                                    'bot'    => '🤖 Bot',
+                                                    default  => '💻 Desktop',
+                                                };
+                                            ?>
+                                            <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]"><?= $devIcon ?></span>
+                                        </td>
+                                        <td class="py-2.5 px-3 text-slate-400 truncate max-w-[180px]" title="<?= esc($v['referrer'] ?? 'Direct') ?>">
+                                            <?= esc($v['referrer'] ? parse_url($v['referrer'], PHP_URL_HOST) ?? $v['referrer'] : 'Direct Entry') ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================================== -->
+        <!-- SECTION 2: SEARCH & DIAGNOSTIC SCAN QUERY LOGS                           -->
+        <!-- ======================================================================== -->
+        <section id="queries" class="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-soft-md space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-800">
+                <div>
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <span>⚡ Diagnostic &amp; Search Queries Log</span>
+                        <span class="text-xs font-mono px-2.5 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-700/60 font-semibold"><?= count($recentQueries) ?> Scans Logged</span>
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Jab bhi koi website ko analyze karta hai ya diagnostic query run karta hai, unke search queries, scores aur IP yahan store hote hain.</p>
+                </div>
+
+                <form method="GET" action="<?= site_url('admin#queries') ?>" class="flex items-center gap-2">
+                    <input type="text" name="query_search" value="<?= esc($querySearch) ?>" placeholder="Search queried domain or IP..."
+                           class="bg-slate-950 border border-slate-700 text-slate-200 rounded-xl px-3 py-1.5 text-xs placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-52 font-mono">
+                    <button type="submit" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold transition-colors">Search</button>
+                    <?php if ($querySearch !== ''): ?>
+                        <a href="<?= site_url('admin#queries') ?>" class="text-xs text-rose-400 hover:underline px-1">Clear</a>
+                    <?php endif; ?>
+                </form>
+            </div>
+
+            <!-- Top Queried Target Domains -->
+            <?php if (!empty($querySummary['top_queried'])): ?>
+                <div>
+                    <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 block mb-2">Most Queried Target Websites</span>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <?php foreach ($querySummary['top_queried'] as $tq): ?>
+                            <div class="px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono flex items-center gap-2">
+                                <span class="font-bold text-white"><?= esc($tq['target_domain']) ?></span>
+                                <span class="px-1.5 py-0.5 rounded bg-indigo-950 text-indigo-300 font-bold text-[10px]"><?= $tq['count'] ?>x</span>
+                                <?php if ($tq['avg_seo']): ?>
+                                    <span class="text-emerald-400 text-[10px]"><?= round($tq['avg_seo']) ?>% SEO</span>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <!-- Recent Diagnostic Queries Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-300">
+                    <thead class="text-[11px] uppercase tracking-wider text-slate-500 border-b border-slate-800 bg-slate-950/60 font-mono">
+                        <tr>
+                            <th class="py-2.5 px-3">Queried At</th>
+                            <th class="py-2.5 px-3">Target Domain</th>
+                            <th class="py-2.5 px-3">Query Type</th>
+                            <th class="py-2.5 px-3">SEO Score</th>
+                            <th class="py-2.5 px-3">Security Score</th>
+                            <th class="py-2.5 px-3">Caller IP</th>
+                            <th class="py-2.5 px-3 text-right">Quick Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/80 font-mono text-[11px]">
+                        <?php if (empty($recentQueries)): ?>
+                            <tr>
+                                <td colspan="7" class="py-6 text-center text-slate-500 font-sans">No diagnostic queries recorded yet.</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($recentQueries as $q): ?>
+                                <tr class="hover:bg-slate-800/40 transition-colors">
+                                    <td class="py-2.5 px-3 text-slate-400 whitespace-nowrap">
+                                        <?= date('M d, H:i:s', strtotime($q['queried_at'])) ?>
+                                    </td>
+                                    <td class="py-2.5 px-3 font-bold text-white">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                            <span><?= esc($q['target_domain']) ?></span>
+                                        </div>
+                                    </td>
+                                    <td class="py-2.5 px-3">
+                                        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] uppercase font-bold">
+                                            <?= esc($q['query_type']) ?>
+                                        </span>
+                                    </td>
+                                    <td class="py-2.5 px-3">
+                                        <?php if ($q['score_seo']): ?>
+                                            <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700/60 font-bold text-[10px]">
+                                                <?= $q['score_seo'] ?> / 100
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="text-slate-600">&mdash;</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="py-2.5 px-3">
+                                        <?php if ($q['score_security']): ?>
+                                            <span class="px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-700/60 font-bold text-[10px]">
+                                                <?= $q['score_security'] ?> / 100
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="text-slate-600">&mdash;</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="py-2.5 px-3 text-slate-400">
+                                        <?= esc($q['ip_address']) ?>
+                                    </td>
+                                    <td class="py-2.5 px-3 text-right">
+                                        <form action="<?= site_url('admin/system/quick-scan') ?>" method="POST" class="inline">
+                                            <?= csrf_field() ?>
+                                            <input type="hidden" name="url" value="<?= esc($q['target_domain']) ?>">
+                                            <button type="submit" class="px-2 py-1 rounded bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white text-[10px] font-bold transition-colors">
+                                                Re-Scan &rarr;
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
             </div>
         </section>
 
@@ -604,7 +853,7 @@
 
     <!-- Admin Footer -->
     <footer class="border-t border-slate-900 bg-slate-950/80 py-4 mt-12 text-center text-xs text-slate-500 font-mono">
-        <span>SiteOps Master Control Plane &bull; Level 4 Administrative Protocol &bull; 100% Dynamic Engine</span>
+        <span>SiteOps Master Control Plane &bull; Real-Time Visitor Logs &bull; Domain-Wise Telemetry &bull; Search &amp; Scan Queries</span>
     </footer>
 
 </body>
