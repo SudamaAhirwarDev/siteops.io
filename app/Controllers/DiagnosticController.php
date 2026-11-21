@@ -40,9 +40,19 @@ class DiagnosticController extends Controller
                 ->setStatusCode(200);
         }
 
-        $url = $this->request->getJSON(true)['url'] 
-            ?? $this->request->getPost('url') 
-            ?? $this->request->getGet('url');
+        $url = null;
+        try {
+            $json = $this->request->getJSON(true);
+            if (is_array($json) && !empty($json['url'])) {
+                $url = $json['url'];
+            }
+        } catch (\Throwable $e) {
+            // Non-JSON payload
+        }
+
+        if (empty($url)) {
+            $url = $this->request->getPost('url') ?? $this->request->getGet('url');
+        }
 
         if (empty($url)) {
             return $this->response

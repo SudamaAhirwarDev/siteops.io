@@ -294,20 +294,20 @@
     <!-- 2. NAVBAR (PRIME OBSIDIAN NAVY - CLEAN & ESSENTIALS ONLY)        -->
     <!-- ================================================================= -->
     <header class="sticky top-0 z-50 backdrop-blur-xl bg-slate-900/95 border-b border-slate-800 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3">
             <!-- Brand Logo -->
-            <a href="<?= site_url('/') ?>" class="flex items-center gap-3.5 group">
-                <div class="relative w-11 h-11 transition-transform group-hover:scale-105 shrink-0">
+            <a href="<?= site_url('/') ?>" class="flex items-center gap-2.5 sm:gap-3.5 group shrink-0">
+                <div class="relative w-9 h-9 sm:w-11 sm:h-11 transition-transform group-hover:scale-105 shrink-0">
                     <img src="<?= base_url('assets/images/logo-icon.svg') ?>" alt="SiteOps Logo" class="w-full h-full drop-shadow-[0_4px_12px_rgba(79,70,229,0.45)]">
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-xl font-extrabold tracking-tight text-white flex items-center gap-1.5 leading-none">
+                    <span class="text-lg sm:text-xl font-extrabold tracking-tight text-white flex items-center gap-1.5 leading-none">
                         SiteOps<span class="text-indigo-400">.</span>
-                        <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-slate-800 text-indigo-300 border border-slate-700 font-bold tracking-wider">
+                        <span class="hidden xs:inline-flex text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-slate-800 text-indigo-300 border border-slate-700 font-bold tracking-wider">
                             &lt;15KB
                         </span>
                     </span>
-                    <span class="text-[10px] text-slate-400 font-semibold tracking-wide uppercase mt-1">Growth &amp; Cyber Suite</span>
+                    <span class="hidden sm:block text-[10px] text-slate-400 font-semibold tracking-wide uppercase mt-1">Growth &amp; Cyber Suite</span>
                 </div>
             </a>
 
@@ -326,21 +326,19 @@
             </nav>
 
             <!-- Action Buttons: Sign In & Start Free Trial -->
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
                 <?php if (session()->get('is_logged_in')): ?>
-                    <a href="<?= site_url('dashboard') ?>" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 shadow-soft-xs transition-colors">
+                    <a href="<?= site_url('dashboard') ?>" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 shadow-soft-xs transition-colors">
                         <span>Dashboard</span>
                         <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                     </a>
                 <?php else: ?>
-                    <a href="<?= site_url('login') ?>" class="text-sm font-bold text-slate-300 hover:text-white px-3 py-2 transition-colors">
+                    <a href="<?= site_url('login') ?>" class="hidden sm:inline-flex text-sm font-bold text-slate-300 hover:text-white px-3 py-2 transition-colors">
                         Sign In
                     </a>
-                    <a href="<?= site_url('register') ?>" class="relative group inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 shadow-soft-sm transition-all duration-200 hover:-translate-y-0.5">
-                        <span>Start Free Trial</span>
-                        <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
+                    <a href="<?= site_url('register') ?>" class="relative group inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 shadow-soft-sm transition-all duration-200">
+                        <span>Free Trial</span>
+                        <span class="hidden sm:inline">&rarr;</span>
                     </a>
                 <?php endif; ?>
 
@@ -350,7 +348,7 @@
                     id="mobile-menu-toggle-btn" 
                     onclick="toggleMobileMenu()" 
                     aria-label="Toggle navigation menu"
-                    class="md:hidden p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-colors"
+                    class="md:hidden p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-colors"
                 >
                     <svg id="hamburger-icon-open" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
