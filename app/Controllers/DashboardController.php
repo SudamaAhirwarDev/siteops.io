@@ -168,4 +168,39 @@ class DashboardController extends Controller
             'message'   => ucfirst($module) . ' module ' . ($state ? 'activated' : 'disabled') . '.',
         ]);
     }
+
+    /**
+     * AJAX endpoint: Verify if the universal script is installed and active on the site
+     */
+    public function verifyInstallation($siteId)
+    {
+        $userId = (int) session()->get('user_id');
+        $site = $this->siteModel->getSiteForUser((int) $siteId, $userId);
+
+        if (!$site) {
+            return $this->response->setStatusCode(404)->setJSON([
+                'success' => false,
+                'message' => 'Website not found or unauthorized.',
+            ]);
+        }
+
+        // Check if visitor logs or query logs exist for this domain
+        $visitorLogModel = new \App\Models\VisitorLogModel();
+        $pingsCount = $visitorLogModel->where('domain', $site['domain'])->countAllResults();
+        $lastLog = $visitorLogModel->where('domain', $site['domain'])->orderBy('visited_at', 'DESC')->first();
+
+        $isConnected = ($pingsCount > 0);
+
+        return $this->response->setJSON([
+            'success'     => true,
+            'connected'   => $isConnected,
+            'domain'      => $site['domain'],
+            'site_key'    => $site['site_key'],
+            'pings_count' => $pingsCount,
+            'last_seen'   => $lastLog ? date('M d, Y H:i:s', strtotime($lastLog['visited_at'])) : null,
+            'message'     => $isConnected 
+                ? "Universal script detected! {$pingsCount} active requests logged from {$site['domain']}."
+                : "No script pings detected yet for {$site['domain']}. Ensure the script is placed inside <head> and refresh your website."
+        ]);
+    }
 }

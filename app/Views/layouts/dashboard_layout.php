@@ -94,6 +94,9 @@
                     <a href="<?= site_url('modules/dunning') ?>" class="px-3 py-1.5 rounded-lg transition-colors <?= str_contains(uri_string(), 'dunning') ? 'bg-slate-100 text-brand-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' ?>">
                         Stripe Dunning
                     </a>
+                    <button type="button" onclick="openInstallGuideModal()" class="ml-2 px-3 py-1.5 rounded-lg text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 transition-all flex items-center gap-1.5 shadow-soft-xs cursor-pointer">
+                        <span>📖 How to Add Script</span>
+                    </button>
                 </nav>
             </div>
 
@@ -179,6 +182,10 @@
                         <span>Master Admin Control</span>
                     </a>
                 <?php endif; ?>
+                <button type="button" onclick="openInstallGuideModal(); toggleDashboardMobileMenu();" class="p-2.5 rounded-xl border flex items-center gap-2.5 bg-indigo-50 border-indigo-200 text-indigo-700 font-bold hover:bg-indigo-100 transition-colors sm:col-span-2 text-left">
+                    <span>📖</span>
+                    <span>How to Add Script (WordPress, Shopify, Next.js, HTML)</span>
+                </button>
             </div>
 
             <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">
@@ -249,8 +256,336 @@
         </div>
     </footer>
 
-    <!-- Global Helper Script for Copying and Notifications -->
+    <!-- Global Installation Guide Modal (Available Across All Dashboard Pages) -->
+    <div id="install-guide-modal" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-md hidden overflow-y-auto">
+        <div class="bg-white border border-slate-200/90 rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-150">
+            <!-- Modal Header -->
+            <div class="px-6 py-5 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between border-b border-indigo-900/60">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-indigo-300 font-bold text-lg shadow-inner">
+                        📖
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            How to Add SiteOps Script
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">&lt;15KB Bundle</span>
+                        </h3>
+                        <p class="text-xs text-indigo-200/80 mt-0.5">Works on any CMS, framework, or static HTML in under 60 seconds</p>
+                    </div>
+                </div>
+                <button onclick="closeInstallGuideModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white flex items-center justify-center transition-colors text-lg">
+                    &times;
+                </button>
+            </div>
+
+            <!-- Active Target Domain Info Bar -->
+            <div class="px-6 py-3 bg-indigo-50/70 border-b border-indigo-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-slate-700">Target Domain:</span>
+                    <span id="guide-active-domain" class="font-mono font-bold text-indigo-700 bg-white px-2.5 py-1 rounded-lg border border-indigo-200">mywebsite.com</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-slate-500">Site Key:</span>
+                    <span id="guide-active-key" class="font-mono text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200 text-[11px]">so_xxxxxxxxxxxx</span>
+                </div>
+            </div>
+
+            <!-- 1-Click Code Box -->
+            <div class="p-6 border-b border-slate-100 bg-slate-900 text-slate-100">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                        Universal 1-Line Embed Snippet
+                    </span>
+                    <button onclick="copyCurrentScriptSnippet()" id="btn-copy-guide-script"
+                            class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg shadow-sm transition-all flex items-center gap-1.5 font-bold cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                        <span id="guide-copy-btn-label">Copy Script Tag</span>
+                    </button>
+                </div>
+                <pre class="text-xs font-mono text-emerald-400 overflow-x-auto p-3.5 bg-slate-950 rounded-xl border border-slate-800"><code id="guide-code-snippet">&lt;script src="<?= base_url('loader.js?id=YOUR_SITE_KEY') ?>" async&gt;&lt;/script&gt;</code></pre>
+                <p class="text-[11px] text-slate-400 mt-2 flex items-center gap-1.5">
+                    <span>💡</span>
+                    <span>Asynchronous non-blocking loading. Zero impact on PageSpeed &amp; Core Web Vitals.</span>
+                </p>
+            </div>
+
+            <!-- Platform Tabs -->
+            <div class="px-6 pt-4 bg-slate-50 border-b border-slate-200">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Select Your Platform / CMS:</span>
+                <div class="flex items-center gap-2 overflow-x-auto pb-3 text-xs font-bold" id="platform-tabs">
+                    <button type="button" onclick="switchGuideTab('html')" id="tab-btn-html" class="guide-tab-btn active px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white shadow-soft-xs transition-all whitespace-nowrap">
+                        🌐 HTML / PHP
+                    </button>
+                    <button type="button" onclick="switchGuideTab('wordpress')" id="tab-btn-wordpress" class="guide-tab-btn px-3.5 py-1.5 rounded-xl bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 transition-all whitespace-nowrap">
+                        🟦 WordPress
+                    </button>
+                    <button type="button" onclick="switchGuideTab('shopify')" id="tab-btn-shopify" class="guide-tab-btn px-3.5 py-1.5 rounded-xl bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 transition-all whitespace-nowrap">
+                        🟢 Shopify
+                    </button>
+                    <button type="button" onclick="switchGuideTab('nextjs')" id="tab-btn-nextjs" class="guide-tab-btn px-3.5 py-1.5 rounded-xl bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 transition-all whitespace-nowrap">
+                        ⚛️ Next.js / React
+                    </button>
+                    <button type="button" onclick="switchGuideTab('webflow')" id="tab-btn-webflow" class="guide-tab-btn px-3.5 py-1.5 rounded-xl bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 transition-all whitespace-nowrap">
+                        🎨 Webflow / Wix
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Content Panels -->
+            <div class="p-6 max-h-[380px] overflow-y-auto space-y-4 text-xs text-slate-600 leading-relaxed">
+                <!-- Tab Panel 1: HTML / PHP -->
+                <div id="panel-html" class="guide-panel space-y-3">
+                    <div class="p-3.5 rounded-2xl bg-indigo-50/60 border border-indigo-100 text-slate-800">
+                        <h4 class="font-bold text-sm text-indigo-950 mb-1">Standard HTML / PHP Installation</h4>
+                        <p>Paste the snippet directly into your website's main HTML template inside the <code class="bg-indigo-100 px-1 py-0.5 rounded text-indigo-900 font-mono font-bold">&lt;head&gt;</code> section.</p>
+                    </div>
+
+                    <ol class="list-decimal list-inside space-y-2 text-slate-700">
+                        <li>Open your root layout or header template file (e.g., <code class="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-900">index.html</code>, <code class="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-900">header.php</code>, or <code class="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-900">layout.blade.php</code>).</li>
+                        <li>Paste the SiteOps <code class="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-900">&lt;script&gt;</code> tag right before the closing <code class="font-mono text-indigo-600 font-bold">&lt;/head&gt;</code> tag.</li>
+                        <li>Save and upload the file to your web server.</li>
+                    </ol>
+
+                    <div class="p-3 bg-slate-900 rounded-xl font-mono text-[11px] text-slate-300">
+                        <span class="text-slate-500">&lt;!-- Example Placement: --&gt;</span><br>
+                        <span class="text-indigo-400">&lt;head&gt;</span><br>
+                        &nbsp;&nbsp;<span class="text-slate-400">&lt;title&gt;My Website&lt;/title&gt;</span><br>
+                        &nbsp;&nbsp;<span class="text-emerald-400" id="html-guide-example">&lt;script src="..." async&gt;&lt;/script&gt;</span><br>
+                        <span class="text-indigo-400">&lt;/head&gt;</span>
+                    </div>
+                </div>
+
+                <!-- Tab Panel 2: WordPress -->
+                <div id="panel-wordpress" class="guide-panel hidden space-y-3">
+                    <div class="p-3.5 rounded-2xl bg-indigo-50/60 border border-indigo-100 text-slate-800">
+                        <h4 class="font-bold text-sm text-indigo-950 mb-1">WordPress (No Coding Required)</h4>
+                        <p>You can add the SiteOps universal script in under 60 seconds using the free WPCode plugin or your active theme's Header settings.</p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="border border-slate-200 rounded-xl p-3 bg-white">
+                            <span class="font-bold text-slate-900 block mb-1">Option A: Using WPCode Plugin (Recommended &bull; 60 seconds)</span>
+                            <ol class="list-decimal list-inside space-y-1 text-slate-600 text-xs">
+                                <li>In WordPress Admin, go to <strong>Plugins &rarr; Add New</strong>.</li>
+                                <li>Search for <strong>"WPCode"</strong> (or "Insert Headers and Footers") and click <strong>Install &amp; Activate</strong>.</li>
+                                <li>Navigate to <strong>Code Snippets &rarr; Header &amp; Footer</strong> in your left admin sidebar.</li>
+                                <li>In the <strong>Header</strong> box, paste your SiteOps <code class="font-mono bg-slate-100 px-1 text-indigo-700">&lt;script&gt;</code> tag.</li>
+                                <li>Click <strong>Save Changes</strong>. Done!</li>
+                            </ol>
+                        </div>
+
+                        <div class="border border-slate-200 rounded-xl p-3 bg-white">
+                            <span class="font-bold text-slate-900 block mb-1">Option B: Theme Header Editor</span>
+                            <ol class="list-decimal list-inside space-y-1 text-slate-600 text-xs">
+                                <li>Go to <strong>Appearance &rarr; Theme File Editor</strong>.</li>
+                                <li>On the right side list, click <strong>Theme Header (<code class="font-mono">header.php</code>)</strong>.</li>
+                                <li>Paste the script tag just above the closing <code class="font-mono text-indigo-600">&lt;/head&gt;</code> line.</li>
+                                <li>Click <strong>Update File</strong>.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Panel 3: Shopify -->
+                <div id="panel-shopify" class="guide-panel hidden space-y-3">
+                    <div class="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-100 text-slate-800">
+                        <h4 class="font-bold text-sm text-emerald-950 mb-1">Shopify Online Store Setup</h4>
+                        <p>Add SiteOps directly to your Shopify store theme to instantly activate review toasts and compliance.</p>
+                    </div>
+
+                    <ol class="list-decimal list-inside space-y-2 text-slate-700">
+                        <li>Log in to your <strong>Shopify Admin</strong>.</li>
+                        <li>Click <strong>Online Store &rarr; Themes</strong> in the left menu.</li>
+                        <li>Next to your active theme, click the <strong>... (three dots)</strong> and select <strong>Edit code</strong>.</li>
+                        <li>In the left sidebar under <strong>Layout</strong>, click <code class="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-indigo-700">theme.liquid</code>.</li>
+                        <li>Scroll down or press <kbd class="px-1.5 py-0.5 bg-slate-200 rounded text-[10px]">Ctrl+F</kbd> to find the <code class="font-mono text-indigo-600 font-bold">&lt;/head&gt;</code> tag.</li>
+                        <li>Paste your SiteOps script code immediately above <code class="font-mono text-indigo-600 font-bold">&lt;/head&gt;</code>.</li>
+                        <li>Click <strong>Save</strong> at the top right of the editor.</li>
+                    </ol>
+                </div>
+
+                <!-- Tab Panel 4: Next.js / React -->
+                <div id="panel-nextjs" class="guide-panel hidden space-y-3">
+                    <div class="p-3.5 rounded-2xl bg-slate-100 border border-slate-200 text-slate-800">
+                        <h4 class="font-bold text-sm text-slate-900 mb-1">Next.js &amp; Modern React</h4>
+                        <p>Use Next.js built-in <code class="font-mono font-bold text-indigo-600">&lt;Script&gt;</code> component for optimal hydration and performance.</p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <span class="font-bold text-slate-900 block">Next.js App Router (<code class="font-mono text-xs">app/layout.tsx</code> or <code class="font-mono text-xs">app/layout.js</code>):</span>
+                        <div class="p-3 bg-slate-900 rounded-xl font-mono text-[11px] text-slate-300 overflow-x-auto">
+                            <span class="text-indigo-400">import</span> Script <span class="text-indigo-400">from</span> <span class="text-emerald-400">'next/script'</span>;<br><br>
+                            <span class="text-indigo-400">export default function</span> RootLayout({ children }) {<br>
+                            &nbsp;&nbsp;<span class="text-indigo-400">return</span> (<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&lt;html lang=<span class="text-emerald-400">"en"</span>&gt;<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;head&gt;<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;Script<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-400">src</span>=<span class="text-amber-300" id="nextjs-script-src">"<?= base_url('loader.js?id=YOUR_SITE_KEY') ?>"</span><br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-400">strategy</span>=<span class="text-emerald-400">"afterInteractive"</span><br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&gt;<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/head&gt;<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;body&gt;{children}&lt;/body&gt;<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&lt;/html&gt;<br>
+                            &nbsp;&nbsp;);<br>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Panel 5: Webflow / Wix / Squarespace -->
+                <div id="panel-webflow" class="guide-panel hidden space-y-3">
+                    <div class="p-3.5 rounded-2xl bg-indigo-50/60 border border-indigo-100 text-slate-800">
+                        <h4 class="font-bold text-sm text-indigo-950 mb-1">No-Code Website Builders</h4>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="border border-slate-200 rounded-xl p-3 bg-white">
+                            <span class="font-bold text-slate-900 block mb-0.5">Webflow</span>
+                            <p class="text-slate-600">Open <strong>Project Settings &rarr; Custom Code</strong> &rarr; Paste your snippet into the <strong>Head Code</strong> field &rarr; Click <strong>Save &amp; Publish</strong>.</p>
+                        </div>
+                        <div class="border border-slate-200 rounded-xl p-3 bg-white">
+                            <span class="font-bold text-slate-900 block mb-0.5">Wix</span>
+                            <p class="text-slate-600">Go to <strong>Settings &rarr; Custom Code</strong> &rarr; Click <strong>+ Add Custom Code</strong> &rarr; Paste snippet &rarr; Set to load on <strong>All Pages (Load once)</strong> and place in <strong>Head</strong> &rarr; Click <strong>Apply</strong>.</p>
+                        </div>
+                        <div class="border border-slate-200 rounded-xl p-3 bg-white">
+                            <span class="font-bold text-slate-900 block mb-0.5">Squarespace</span>
+                            <p class="text-slate-600">Go to <strong>Settings &rarr; Advanced &rarr; Code Injection</strong> &rarr; Paste snippet into the <strong>Header</strong> box &rarr; Click <strong>Save</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer: Live Verification Section -->
+            <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="flex items-center gap-2 text-xs">
+                    <span id="verify-status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-300"></span>
+                    <span id="verify-status-text" class="text-slate-600">Click verify to check if your script is live.</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="runScriptVerification()" id="btn-verify-guide" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-soft-sm transition-all flex items-center gap-1.5 cursor-pointer">
+                        <span>⚡ Test &amp; Verify Connection</span>
+                    </button>
+                    <button type="button" onclick="closeInstallGuideModal()" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-800 bg-white border border-slate-200 transition-colors">
+                        Done
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Helper Script for Copying, Modals and Notifications -->
     <script>
+        let currentGuideSiteId = null;
+        let currentGuideSiteKey = '';
+        let currentGuideDomain = '';
+
+        function openInstallGuideModal(domain = '', siteKey = '', siteId = null) {
+            const modal = document.getElementById('install-guide-modal');
+            if (!modal) return;
+
+            // Default fallback if called from global navbar
+            if (!domain) {
+                const firstSiteEl = document.querySelector('[data-site-domain]');
+                if (firstSiteEl) {
+                    domain = firstSiteEl.getAttribute('data-site-domain') || 'yourdomain.com';
+                    siteKey = firstSiteEl.getAttribute('data-site-key') || 'so_sample_key';
+                    siteId = firstSiteEl.getAttribute('data-site-id') || null;
+                } else {
+                    domain = 'yourbrand.com';
+                    siteKey = 'so_universal_key';
+                }
+            }
+
+            currentGuideDomain = domain;
+            currentGuideSiteKey = siteKey;
+            currentGuideSiteId = siteId;
+
+            const domainEl = document.getElementById('guide-active-domain');
+            const keyEl = document.getElementById('guide-active-key');
+            const codeEl = document.getElementById('guide-code-snippet');
+            const htmlEx = document.getElementById('html-guide-example');
+            const nextSrc = document.getElementById('nextjs-script-src');
+
+            const scriptUrl = '<?= base_url('loader.js?id=') ?>' + siteKey;
+            const fullSnippet = `<script src="${scriptUrl}" async><\/script>`;
+
+            if (domainEl) domainEl.innerText = domain;
+            if (keyEl) keyEl.innerText = siteKey;
+            if (codeEl) codeEl.innerText = fullSnippet;
+            if (htmlEx) htmlEx.innerText = fullSnippet;
+            if (nextSrc) nextSrc.innerText = `"${scriptUrl}"`;
+
+            // Reset verification status
+            const statusDot = document.getElementById('verify-status-dot');
+            const statusText = document.getElementById('verify-status-text');
+            if (statusDot) statusDot.className = 'w-2.5 h-2.5 rounded-full bg-slate-300';
+            if (statusText) statusText.innerText = 'Click verify to check if your script is live.';
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeInstallGuideModal() {
+            const modal = document.getElementById('install-guide-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function switchGuideTab(platform) {
+            document.querySelectorAll('.guide-panel').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.guide-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white');
+                btn.classList.add('bg-white', 'text-slate-700');
+            });
+
+            const targetPanel = document.getElementById('panel-' + platform);
+            const targetBtn = document.getElementById('tab-btn-' + platform);
+
+            if (targetPanel) targetPanel.classList.remove('hidden');
+            if (targetBtn) {
+                targetBtn.classList.remove('bg-white', 'text-slate-700');
+                targetBtn.classList.add('bg-indigo-600', 'text-white');
+            }
+        }
+
+        function copyCurrentScriptSnippet() {
+            const scriptUrl = '<?= base_url('loader.js?id=') ?>' + (currentGuideSiteKey || 'YOUR_SITE_KEY');
+            const snippet = `<script src="${scriptUrl}" async><\/script>`;
+            copyToClipboard(snippet, 'guide-copy-btn-label', 'Copy Script Tag');
+        }
+
+        function runScriptVerification() {
+            const statusDot = document.getElementById('verify-status-dot');
+            const statusText = document.getElementById('verify-status-text');
+            const btn = document.getElementById('btn-verify-guide');
+
+            if (!currentGuideSiteId) {
+                if (statusText) statusText.innerText = 'Please select or add a domain first to verify connection.';
+                return;
+            }
+
+            if (btn) btn.disabled = true;
+            if (statusDot) statusDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping';
+            if (statusText) statusText.innerText = 'Pinging ' + currentGuideDomain + '...';
+
+            fetch('<?= site_url('dashboard/site/verify/') ?>' + currentGuideSiteId)
+                .then(res => res.json())
+                .then(data => {
+                    if (btn) btn.disabled = false;
+                    if (data.connected) {
+                        if (statusDot) statusDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
+                        if (statusText) statusText.innerHTML = `<strong class="text-emerald-700">✓ Connected!</strong> ${data.pings_count} requests logged from ${data.domain}.`;
+                    } else {
+                        if (statusDot) statusDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-500';
+                        if (statusText) statusText.innerHTML = `<span class="text-amber-700">${data.message}</span>`;
+                    }
+                })
+                .catch(err => {
+                    if (btn) btn.disabled = false;
+                    if (statusDot) statusDot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
+                    if (statusText) statusText.innerText = 'Verification check failed. Ensure site is reachable.';
+                });
+        }
+
         function toggleDashboardMobileMenu() {
             const drawer = document.getElementById('dashboard-mobile-nav');
             const iconOpen = document.getElementById('dash-hamburger-icon-open');

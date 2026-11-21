@@ -115,14 +115,17 @@
 
     <!-- Sites List -->
     <?php if (empty($sites)): ?>
-        <div class="bg-white border border-dashed border-slate-300 rounded-3xl p-12 text-center shadow-soft-xs">
+        <div class="bg-white border border-dashed border-slate-300 rounded-3xl p-10 text-center shadow-soft-xs">
             <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-3">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
             </div>
             <h3 class="text-base font-bold text-slate-900">No Domains Added Yet</h3>
-            <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+            <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto mb-4">
                 Add your primary domain above to unlock universal ADA/EAA compliance, review popups, AI SEO, and dunning.
             </p>
+            <button type="button" onclick="openInstallGuideModal('yourwebsite.com', 'so_sample_key')" class="px-4 py-2 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 shadow-soft-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer">
+                <span>📖 Preview How to Install Script (WordPress, Shopify, Next.js, HTML) &rarr;</span>
+            </button>
         </div>
     <?php else: ?>
         <div class="space-y-6">
@@ -130,7 +133,10 @@
                 <?php 
                     $embedSnippet = '<script src="' . base_url('loader.js?id=' . esc($site['site_key'])) . '" async></script>';
                 ?>
-                <div class="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-soft-sm hover:shadow-soft-md transition-shadow">
+                <div class="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-soft-sm hover:shadow-soft-md transition-shadow"
+                     data-site-domain="<?= esc($site['domain']) ?>"
+                     data-site-key="<?= esc($site['site_key']) ?>"
+                     data-site-id="<?= $site['id'] ?>">
                     <!-- Site Header -->
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-100">
                         <div class="flex items-center gap-3.5">
@@ -168,19 +174,31 @@
 
                     <!-- 1-Click Embed Snippet Box -->
                     <div class="mt-5 p-4 rounded-2xl bg-slate-900 text-slate-200 border border-slate-800 shadow-soft-xs">
-                        <div class="flex items-center justify-between mb-2">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
                             <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                                 Universal 1-Line Embed Script (&lt;15KB Bundle)
                             </span>
-                            <button onclick="copyToClipboard('<?= addslashes($embedSnippet) ?>', 'btn-copy-<?= $site['id'] ?>')" id="btn-copy-<?= $site['id'] ?>"
-                                    class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1 rounded-lg shadow-sm transition-colors flex items-center gap-1.5 font-medium">
-                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                                <span>Copy 1-Line Script</span>
-                            </button>
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="openInstallGuideModal('<?= esc($site['domain']) ?>', '<?= esc($site['site_key']) ?>', <?= $site['id'] ?>)"
+                                        class="text-xs bg-slate-800 hover:bg-slate-700 text-indigo-300 hover:text-white px-3 py-1.5 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5 font-semibold cursor-pointer">
+                                    <span>📖 How to Add Script &rarr;</span>
+                                </button>
+                                <button type="button" onclick="copyToClipboard('<?= addslashes($embedSnippet) ?>', 'btn-copy-<?= $site['id'] ?>')" id="btn-copy-<?= $site['id'] ?>"
+                                        class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg shadow-sm transition-colors flex items-center gap-1.5 font-bold cursor-pointer">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                                    <span>Copy Script</span>
+                                </button>
+                            </div>
                         </div>
                         <div class="font-mono text-xs text-indigo-300 overflow-x-auto py-1">
                             <?= esc($embedSnippet) ?>
+                        </div>
+                        <div class="mt-2.5 pt-2.5 border-t border-slate-800 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2">
+                            <span>💡 Paste inside <code class="text-indigo-400">&lt;head&gt;</code> on any platform (WordPress, Shopify, Next.js, HTML).</span>
+                            <button type="button" onclick="openInstallGuideModal('<?= esc($site['domain']) ?>', '<?= esc($site['site_key']) ?>', <?= $site['id'] ?>)" class="text-indigo-400 hover:text-indigo-300 font-semibold underline cursor-pointer">
+                                View step-by-step instructions for <?= esc($site['domain']) ?> &rarr;
+                            </button>
                         </div>
                     </div>
 

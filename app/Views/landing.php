@@ -328,6 +328,9 @@
             <!-- Action Buttons: Sign In & Start Free Trial -->
             <div class="flex items-center gap-2 sm:gap-3 shrink-0">
                 <?php if (session()->get('is_logged_in')): ?>
+                    <a href="<?= site_url('dashboard') ?>" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-indigo-300 bg-indigo-950/80 border border-indigo-700/60 hover:bg-indigo-900 transition-colors">
+                        <span>📖 How to Add Script</span>
+                    </a>
                     <a href="<?= site_url('dashboard') ?>" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 shadow-soft-xs transition-colors">
                         <span>Dashboard</span>
                         <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
@@ -499,6 +502,22 @@
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                                 <span>Stripe Dunning</span>
                             </div>
+                        </div>
+
+                        <!-- Login-Gated Installation Guide Callout -->
+                        <div class="mt-4 pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+                            <?php if (session()->get('is_logged_in')): ?>
+                                <span class="text-indigo-300">✓ Logged in as <strong><?= esc(session()->get('user_name') ?? 'Member') ?></strong></span>
+                                <a href="<?= site_url('dashboard') ?>" class="font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
+                                    <span>Open Step-by-Step Installation Guide (WordPress, Shopify, Next.js, HTML)</span>
+                                    <span>&rarr;</span>
+                                </a>
+                            <?php else: ?>
+                                <span class="text-slate-400 text-[11px]">Unique domain script keys and step-by-step installation guides for WordPress, Shopify, Next.js &amp; HTML are available inside your dashboard.</span>
+                                <a href="<?= site_url('login') ?>" class="text-indigo-400 hover:text-indigo-300 font-bold whitespace-nowrap text-xs underline">
+                                    Sign In to Access Script Guide &rarr;
+                                </a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
