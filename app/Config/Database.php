@@ -340,6 +340,32 @@ class Database extends Config
                     UNIQUE (user_id, usage_date)
                 )");
 
+                // Table 7: visitor_logs
+                $db->exec("CREATE TABLE IF NOT EXISTS visitor_logs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    domain TEXT NOT NULL,
+                    site_id INTEGER NULL,
+                    page_url TEXT NULL,
+                    ip_address TEXT NULL,
+                    user_agent TEXT NULL,
+                    device_type TEXT NOT NULL DEFAULT 'desktop',
+                    referrer TEXT NULL,
+                    visited_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )");
+
+                // Table 8: query_logs
+                $db->exec("CREATE TABLE IF NOT EXISTS query_logs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    query_type TEXT NOT NULL,
+                    target_domain TEXT NOT NULL,
+                    ip_address TEXT NULL,
+                    status TEXT NOT NULL DEFAULT 'success',
+                    score_seo INTEGER NULL,
+                    score_security INTEGER NULL,
+                    details_json TEXT NULL,
+                    queried_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )");
+
                 // Insert default demo & test users (all with password: password123)
                 $passwordHash = password_hash('password123', PASSWORD_BCRYPT);
                 
@@ -374,6 +400,43 @@ class Database extends Config
             // Always ensure 'role' column exists in users table
             try {
                 $db->exec("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'");
+            } catch (\Throwable $e) {}
+
+            // Always ensure visitor_logs and query_logs tables exist (even if DB was created previously)
+            try {
+                $db->exec("CREATE TABLE IF NOT EXISTS visitor_logs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    domain TEXT NOT NULL,
+                    site_id INTEGER NULL,
+                    page_url TEXT NULL,
+                    ip_address TEXT NULL,
+                    user_agent TEXT NULL,
+                    device_type TEXT NOT NULL DEFAULT 'desktop',
+                    referrer TEXT NULL,
+                    visited_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )");
+                $db->exec("CREATE TABLE IF NOT EXISTS query_logs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    query_type TEXT NOT NULL,
+                    target_domain TEXT NOT NULL,
+                    ip_address TEXT NULL,
+                    status TEXT NOT NULL DEFAULT 'success',
+                    score_seo INTEGER NULL,
+                    score_security INTEGER NULL,
+                    details_json TEXT NULL,
+                    queried_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )");
+            } catch (\Throwable $e) {}
+
+            // Always ensure Nitin's account and aiorbit.kesug.com domain are preserved
+            try {
+                $passwordHash = password_hash('password123', PASSWORD_BCRYPT);
+                $db->exec("INSERT OR IGNORE INTO users (id, name, email, password_hash, role, plan_type, trial_ends_at) 
+                           VALUES (4, 'Nitin Mandle', 'nitinmandle3@gmail.com', '{$passwordHash}', 'user', 'trial', datetime('now', '+15 days'))");
+                $db->exec("INSERT OR IGNORE INTO sites (id, user_id, domain, site_key, module_accessibility, module_reviews, module_seo, module_dunning) 
+                           VALUES (4, 4, 'aiorbit.kesug.com', 'so_ef1c411ebccb0', 1, 1, 1, 0)");
+                $db->exec("INSERT OR IGNORE INTO visitor_logs (domain, site_id, page_url, ip_address, device_type, visited_at)
+                           VALUES ('aiorbit.kesug.com', 4, '/api/config/so_ef1c411ebccb0', '185.27.134.135', 'desktop', datetime('now'))");
             } catch (\Throwable $e) {}
 
             // Always ensure master admin user exists (admin@siteops.io / admin123)
