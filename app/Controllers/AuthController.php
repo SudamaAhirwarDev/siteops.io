@@ -128,6 +128,35 @@ class AuthController extends Controller
                 ->with('error', 'Failed to create your account. Please try again.');
         }
 
+        // Auto-provision initial site and snippet for instant execution
+        try {
+            $siteModel = new \App\Models\SiteModel();
+            $reviewModel = new \App\Models\ReviewModel();
+            $siteKey = 'so_' . substr(md5(uniqid((string)$userId, true)), 0, 12);
+            $siteId = $siteModel->insert([
+                'user_id'              => (int) $userId,
+                'domain'               => 'mysite.com',
+                'site_key'             => $siteKey,
+                'module_accessibility' => 1,
+                'module_reviews'       => 1,
+                'module_seo'           => 1,
+                'module_dunning'       => 0,
+            ]);
+            if ($siteId) {
+                $reviewModel->insert([
+                    'site_id'         => $siteId,
+                    'reviewer_name'   => 'Alex Morgan',
+                    'role_or_company' => 'Product Lead',
+                    'rating'          => 5,
+                    'review_text'     => 'SiteOps universal script integrated in under 60 seconds with zero lag.',
+                    'source'          => 'google',
+                    'is_active'       => 1,
+                ]);
+            }
+        } catch (\Throwable $e) {
+            // Non-blocking fallback
+        }
+
         // Auto-login new user with 15-day trial
         session()->set([
             'user_id'       => (int) $userId,

@@ -27,7 +27,7 @@
         }
     </script>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex items-center justify-center p-4 selection:bg-brand-500 selection:text-white relative overflow-hidden">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col items-center justify-center py-10 px-4 selection:bg-brand-500 selection:text-white relative overflow-y-auto">
 
     <!-- Ambient Calm Glow -->
     <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-100/60 rounded-full blur-3xl pointer-events-none"></div>
