@@ -69,7 +69,7 @@ class SeoController extends Controller
         } catch (\Throwable $e) {
             log_message('error', 'SeoController::index error: ' . $e->getMessage());
             return redirect()->to(site_url('dashboard'))
-                ->with('error', 'Unable to load SEO module. Please try again.');
+                ->with('error', 'SEO Module Error: ' . $e->getMessage() . ' in ' . basename($e->getFile()) . ':' . $e->getLine());
         }
     }
 
