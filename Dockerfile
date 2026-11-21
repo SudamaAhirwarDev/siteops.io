@@ -34,7 +34,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader
 
 # Ensure proper permissions for CodeIgniter writable directories
-RUN chown -R www-data:www-data /var/www/html/writable
+RUN chown -R www-data:www-data /var/www/html/writable \
+    && chmod -R 777 /var/www/html/writable
 
 # Expose port and start Apache
 EXPOSE 80

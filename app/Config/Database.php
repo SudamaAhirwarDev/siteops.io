@@ -229,6 +229,15 @@ class Database extends Config
                 'pConnect'    => false,
                 'DBDebug'     => false,
                 'foreignKeys' => false,
+                'busyTimeout' => 1000,
+                'synchronous' => null,
+                'swapPre'     => '',
+                'failover'    => [],
+                'dateFormat'  => [
+                    'date'     => 'Y-m-d',
+                    'datetime' => 'Y-m-d H:i:s',
+                    'time'     => 'H:i:s',
+                ],
             ];
 
             $this->ensureSqliteSchema($sqlitePath);
