@@ -109,11 +109,14 @@
     </div>
 
     <!-- Active Audit Report (If Available) -->
-    <?php if ($latestAudit): ?>
+    <?php 
+        $activeAudit = $latest_audit ?? $latestAudit ?? null;
+    ?>
+    <?php if ($activeAudit): ?>
         <?php 
-            $fixes = json_decode($latestAudit['recommendations_json'] ?? '[]', true) ?: [];
-            $seoScore = (int) $latestAudit['seo_score'];
-            $geoScore = (int) $latestAudit['geo_ai_score'];
+            $fixes = json_decode($activeAudit['recommendations_json'] ?? '[]', true) ?: [];
+            $seoScore = (int) $activeAudit['seo_score'];
+            $geoScore = (int) $activeAudit['geo_ai_score'];
         ?>
         <div class="space-y-6">
             <!-- Score Cards -->
@@ -128,7 +131,7 @@
                             </span>
                         </div>
                         <p class="text-xs text-slate-500 mt-1">Evaluates title, meta description, heading structure, canonicals &amp; alt tags.</p>
-                        <p class="text-xs text-slate-400 mt-3 font-mono">Audited: <?= date('M d, Y H:i', strtotime($latestAudit['audited_at'])) ?></p>
+                        <p class="text-xs text-slate-400 mt-3 font-mono">Audited: <?= date('M d, Y H:i', strtotime($activeAudit['audited_at'])) ?></p>
                     </div>
 
                     <div class="w-22 h-22 sm:w-24 sm:h-24 rounded-full border-4 <?= $seoScore >= 80 ? 'border-emerald-500 bg-emerald-50/40 text-emerald-700' : ($seoScore >= 50 ? 'border-amber-500 bg-amber-50/40 text-amber-700' : 'border-rose-500 bg-rose-50/40 text-rose-700') ?> flex flex-col items-center justify-center shrink-0 shadow-soft-xs">
@@ -149,7 +152,7 @@
                             </span>
                         </div>
                         <p class="text-xs text-slate-500 mt-1">Perplexity AI, ChatGPT Search, Claude &amp; Gemini entity extraction index.</p>
-                        <p class="text-[11px] text-slate-400 mt-3 font-mono truncate max-w-xs">URL: <?= esc($latestAudit['page_url']) ?></p>
+                        <p class="text-[11px] text-slate-400 mt-3 font-mono truncate max-w-xs">URL: <?= esc($activeAudit['page_url']) ?></p>
                     </div>
 
                     <div class="w-22 h-22 sm:w-24 sm:h-24 rounded-full border-4 <?= $geoScore >= 80 ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-amber-500 bg-amber-50/40 text-amber-700' ?> flex flex-col items-center justify-center shrink-0 shadow-soft-xs">

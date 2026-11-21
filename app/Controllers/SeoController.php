@@ -64,12 +64,13 @@ class SeoController extends Controller
                 'selected_site' => $selectedSite,
                 'recent_audits' => $recentAudits,
                 'latest_audit'  => $latestAudit,
+                'latestAudit'   => $latestAudit,
                 'trial_status'  => $trialStatus,
             ]);
         } catch (\Throwable $e) {
             log_message('error', 'SeoController::index error: ' . $e->getMessage());
             return redirect()->to(site_url('dashboard'))
-                ->with('error', 'SEO Module Error: ' . $e->getMessage() . ' in ' . basename($e->getFile()) . ':' . $e->getLine());
+                ->with('error', 'Unable to load SEO module. Please try again.');
         }
     }
 
