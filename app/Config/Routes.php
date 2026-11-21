@@ -60,6 +60,10 @@ $routes->get('api/webhook/stripe/(:segment)', 'ApiController::stripeWebhook/$1')
 $routes->post('api/webhook/billing', 'ApiController::billingWebhook');
 $routes->get('api/webhook/billing', 'ApiController::billingWebhook');
 
+// Subscription Inquiry & Contact Route (Exempt from CSRF)
+$routes->match(['get', 'post'], 'api/subscription/inquiry', 'ApiController::subscriptionInquiry');
+$routes->options('api/subscription/inquiry', 'ApiController::subscriptionInquiry');
+
 // Authenticated Dashboard Routes (Protected by AuthFilter)
 $routes->group('', ['filter' => 'auth'], static function ($routes) {
     // Main Dashboard

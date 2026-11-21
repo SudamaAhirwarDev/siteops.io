@@ -743,9 +743,9 @@
                                     </ul>
                                 </div>
                                 <div class="mt-5 pt-3.5 border-t border-slate-100">
-                                    <a href="<?= site_url('register') ?>?plan=pro" class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 shadow-soft-sm transition-all hover:-translate-y-0.5">
-                                        <span>Fix All Issues with Pro ($39)</span> &rarr;
-                                    </a>
+                                    <button type="button" onclick="openLandingContactModal('pro')" class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 shadow-soft-sm transition-all hover:-translate-y-0.5 cursor-pointer">
+                                        <span>Contact to Activate Pro ($39)</span> &rarr;
+                                    </button>
                                 </div>
                             </div>
 
@@ -775,9 +775,9 @@
                                     </ul>
                                 </div>
                                 <div class="mt-5 pt-3.5 border-t border-slate-100">
-                                    <a href="<?= site_url('register') ?>?plan=agency" class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 transition-colors">
-                                        <span>Deploy Agency Suite ($99)</span> &rarr;
-                                    </a>
+                                    <button type="button" onclick="openLandingContactModal('agency')" class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer">
+                                        <span>Contact to Activate Agency ($99)</span> &rarr;
+                                    </button>
                                 </div>
                             </div>
 
@@ -1485,13 +1485,13 @@
                     Start completely free. Upgrade when you require multiple domains or higher volume recovery.
                 </p>
 
-                <!-- Billing Cycle Toggle -->
+                <!-- Billing Cycle Toggle (1 Month vs 1 Year) -->
                 <div class="mt-8 inline-flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
-                    <button id="btn-monthly" onclick="setBilling('monthly')" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-900 shadow-soft-xs">
-                        Monthly
+                    <button type="button" id="btn-monthly" onclick="setBilling('monthly')" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-900 shadow-soft-xs">
+                        1 Month (Monthly)
                     </button>
-                    <button id="btn-annual" onclick="setBilling('annual')" class="px-4 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1.5">
-                        <span>Annual</span>
+                    <button type="button" id="btn-annual" onclick="setBilling('annual')" class="px-4 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1.5">
+                        <span>1 Year (Annual)</span>
                         <span class="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-1.5 py-0.5 rounded-full border border-emerald-200">Save 20%</span>
                     </button>
                 </div>
@@ -1587,10 +1587,11 @@
                         </ul>
                     </div>
 
-                    <div class="mt-8 pt-6 border-t border-slate-100">
-                        <a href="<?= site_url('register') ?>" class="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 shadow-soft-sm transition-all">
-                            Get Pro Growth Script
-                        </a>
+                    <div class="mt-8 pt-6 border-t border-slate-100 space-y-2">
+                        <button type="button" onclick="openLandingContactModal('pro')" class="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 shadow-soft-sm transition-all cursor-pointer">
+                            <span>Contact to Activate Pro &rarr;</span>
+                        </button>
+                        <p class="text-[10px] text-center text-slate-400">Team activates your domain setup immediately</p>
                     </div>
                 </div>
 
@@ -1630,10 +1631,11 @@
                         </ul>
                     </div>
 
-                    <div class="mt-8 pt-6 border-t border-slate-100">
-                        <a href="<?= site_url('register') ?>" class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors">
-                            Deploy Agency Suite
-                        </a>
+                    <div class="mt-8 pt-6 border-t border-slate-100 space-y-2">
+                        <button type="button" onclick="openLandingContactModal('agency')" class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors cursor-pointer">
+                            <span>Contact to Activate Agency &rarr;</span>
+                        </button>
+                        <p class="text-[10px] text-center text-slate-400">Custom invoice, multi-tenant &amp; white-label support</p>
                     </div>
                 </div>
             </div>
@@ -1847,6 +1849,72 @@
             </div>
         </div>
     </footer>
+
+    <!-- ================================================================= -->
+    <!-- SUBSCRIPTION CONTACT / ACTIVATION MODAL (LANDING)                 -->
+    <!-- ================================================================= -->
+    <div id="landing-contact-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md hidden transition-opacity duration-300">
+        <div class="relative w-full max-w-lg bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-soft-lg overflow-hidden text-slate-900">
+            <!-- Close Button -->
+            <button type="button" onclick="closeLandingContactModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 p-2 rounded-xl transition-colors">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <div class="text-center mb-5">
+                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold border border-indigo-200 mb-2">
+                    <span>💬 Plan Activation &amp; Support</span>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900">Activate <span id="landing-plan-title" class="text-indigo-600">Pro Growth</span></h3>
+                <p class="text-xs text-slate-500 mt-1">
+                    Selected: <strong id="landing-plan-billing" class="text-slate-800">1 Month ($39/mo)</strong>. Contact our team to activate this plan for your domain immediately.
+                </p>
+            </div>
+
+            <!-- Success Toast Alert -->
+            <div id="landing-contact-toast" class="hidden mb-4 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium">
+                <div class="flex items-center gap-2">
+                    <span class="text-emerald-600 font-bold text-base">✓</span>
+                    <span id="landing-contact-msg">Request sent successfully! Our team will contact you shortly.</span>
+                </div>
+            </div>
+
+            <form id="landing-contact-form" onsubmit="submitLandingContact(event)" class="space-y-3.5">
+                <input type="hidden" id="landing-inquiry-plan" value="pro">
+                <input type="hidden" id="landing-inquiry-billing" value="monthly">
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Your Email</label>
+                    <input type="email" id="landing-inquiry-email" required placeholder="you@company.com"
+                           class="w-full bg-slate-50/80 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2 text-xs sm:text-sm focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Target Website / Domain</label>
+                    <input type="text" id="landing-inquiry-domain" placeholder="e.g. yoursaas.com"
+                           class="w-full bg-slate-50/80 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-mono focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Message or Requirement (Optional)</label>
+                    <textarea id="landing-inquiry-message" rows="2" placeholder="Hi team, I would like to activate this plan for our website..."
+                              class="w-full bg-slate-50/80 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2 text-xs sm:text-sm focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20"></textarea>
+                </div>
+
+                <button type="submit" id="landing-btn-submit" class="w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-soft-sm transition-all flex items-center justify-center gap-2">
+                    <span>Submit Activation Request</span>
+                    <span>&rarr;</span>
+                </button>
+            </form>
+
+            <!-- Direct Contact Alternatives -->
+            <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between gap-3 text-xs text-slate-500">
+                <span>Or email directly:</span>
+                <a id="landing-mailto-link" href="mailto:support@siteops.io?subject=Subscription%20Activation" class="font-bold text-indigo-600 hover:underline flex items-center gap-1">
+                    <span>📧 support@siteops.io</span>
+                </a>
+            </div>
+        </div>
+    </div>
 
 
     <!-- ================================================================= -->
@@ -2125,8 +2193,11 @@
             });
         }
 
-        // Pricing Toggle (Monthly vs Annual)
+        let currentLandingBilling = 'monthly';
+
+        // Pricing Toggle (Monthly vs Annual / 1 Month vs 1 Year)
         function setBilling(cycle) {
+            currentLandingBilling = cycle;
             const btnM = document.getElementById('btn-monthly');
             const btnA = document.getElementById('btn-annual');
             const pricePro = document.getElementById('price-pro');
@@ -2140,21 +2211,91 @@
                 btnM.classList.remove('bg-white', 'text-slate-900', 'shadow-soft-xs');
                 btnM.classList.add('text-slate-600');
 
-                pricePro.innerText = '$31';
-                periodPro.innerText = '/ month (billed $372/yr)';
-                priceAgency.innerText = '$79';
-                periodAgency.innerText = '/ month (billed $948/yr)';
+                if (pricePro) pricePro.innerText = '$31';
+                if (periodPro) periodPro.innerText = '/ month (billed $372/yr)';
+                if (priceAgency) priceAgency.innerText = '$79';
+                if (periodAgency) periodAgency.innerText = '/ month (billed $948/yr)';
             } else {
                 btnM.classList.add('bg-white', 'text-slate-900', 'shadow-soft-xs');
                 btnM.classList.remove('text-slate-600');
                 btnA.classList.remove('bg-white', 'text-slate-900', 'shadow-soft-xs');
                 btnA.classList.add('text-slate-600');
 
-                pricePro.innerText = '$39';
-                periodPro.innerText = '/ month';
-                priceAgency.innerText = '$99';
-                periodAgency.innerText = '/ month';
+                if (pricePro) pricePro.innerText = '$39';
+                if (periodPro) periodPro.innerText = '/ month';
+                if (priceAgency) priceAgency.innerText = '$99';
+                if (periodAgency) periodAgency.innerText = '/ month';
             }
+        }
+
+        function openLandingContactModal(plan) {
+            const modal = document.getElementById('landing-contact-modal');
+            const title = document.getElementById('landing-plan-title');
+            const billing = document.getElementById('landing-plan-billing');
+            const mailto = document.getElementById('landing-mailto-link');
+            const inqPlan = document.getElementById('landing-inquiry-plan');
+            const inqBilling = document.getElementById('landing-inquiry-billing');
+
+            const planName = (plan === 'agency') ? 'Agency Scale' : 'Pro Growth';
+            const cycleText = (currentLandingBilling === 'annual')
+                ? ((plan === 'agency') ? '1 Year ($79/mo, billed $948/yr)' : '1 Year ($31/mo, billed $372/yr)')
+                : ((plan === 'agency') ? '1 Month ($99/mo)' : '1 Month ($39/mo)');
+
+            if (title) title.innerText = planName;
+            if (billing) billing.innerText = cycleText;
+            if (inqPlan) inqPlan.value = plan;
+            if (inqBilling) inqBilling.value = currentLandingBilling;
+
+            if (mailto) {
+                mailto.href = `mailto:support@siteops.io?subject=Subscription%20Activation%20-%20${encodeURIComponent(planName)}%20(${encodeURIComponent(cycleText)})&body=Hi%20SiteOps%20Team,%0A%0AI%20would%20like%20to%20activate%20the%20${encodeURIComponent(planName)}%20plan%20(${encodeURIComponent(cycleText)})%20for%20my%20website.%0A%0AThank%20you!`;
+            }
+
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeLandingContactModal() {
+            const modal = document.getElementById('landing-contact-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function submitLandingContact(e) {
+            e.preventDefault();
+            const btn = document.getElementById('landing-btn-submit');
+            const origText = btn.innerHTML;
+            btn.innerHTML = 'Sending request...';
+            btn.disabled = true;
+
+            const payload = new FormData();
+            payload.append('plan', document.getElementById('landing-inquiry-plan').value);
+            payload.append('billing', document.getElementById('landing-inquiry-billing').value);
+            payload.append('email', document.getElementById('landing-inquiry-email').value);
+            payload.append('domain', document.getElementById('landing-inquiry-domain').value);
+            payload.append('message', document.getElementById('landing-inquiry-message').value);
+
+            fetch('<?= site_url('api/subscription/inquiry') ?>', {
+                method: 'POST',
+                body: payload
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.innerHTML = origText;
+                btn.disabled = false;
+                const toast = document.getElementById('landing-contact-toast');
+                const msg = document.getElementById('landing-contact-msg');
+                if (msg && data.message) msg.innerText = data.message;
+                if (toast) toast.classList.remove('hidden');
+
+                setTimeout(() => {
+                    closeLandingContactModal();
+                    if (toast) toast.classList.add('hidden');
+                }, 3500);
+            })
+            .catch(err => {
+                btn.innerHTML = origText;
+                btn.disabled = false;
+                alert('Your request was received. You can also reach our team at support@siteops.io.');
+                closeLandingContactModal();
+            });
         }
 
         // Copy Code Snippet

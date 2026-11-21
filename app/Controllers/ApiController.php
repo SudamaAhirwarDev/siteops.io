@@ -365,4 +365,51 @@ class ApiController extends Controller
             'message'         => "Account upgraded immediately to Unlimited " . ucfirst($targetPlan) . ".",
         ]);
     }
+
+    /**
+     * Handles subscription inquiries & contact activation requests
+     * 
+     * Endpoint: POST /api/subscription/inquiry
+     */
+    public function subscriptionInquiry()
+    {
+        // Handle OPTIONS preflight
+        if (strtolower($this->request->getMethod()) === 'options') {
+            return $this->response
+                ->setHeader('Access-Control-Allow-Origin', '*')
+                ->setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+                ->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+                ->setStatusCode(200);
+        }
+
+        $plan    = trim($this->request->getPost('plan') ?? $this->request->getGet('plan') ?? 'pro');
+        $billing = trim($this->request->getPost('billing') ?? $this->request->getGet('billing') ?? 'monthly');
+        $email   = strtolower(trim($this->request->getPost('email') ?? $this->request->getGet('email') ?? ''));
+        $domain  = trim($this->request->getPost('domain') ?? $this->request->getGet('domain') ?? '');
+        $message = trim($this->request->getPost('message') ?? $this->request->getGet('message') ?? '');
+
+        if (empty($email) && session()->get('user_email')) {
+            $email = session()->get('user_email');
+        }
+
+        // Record in query_logs so admin sees it in real-time
+        TrafficTracker::logQuery('subscription_inquiry', $domain ?: ($email ?: 'siteops.io'), 'success', null, null, [
+            'plan'    => strtoupper($plan),
+            'billing' => ucfirst($billing),
+            'email'   => $email,
+            'domain'  => $domain,
+            'message' => $message,
+            'ip'      => $this->request->getIPAddress(),
+        ]);
+
+        return $this->response
+            ->setHeader('Access-Control-Allow-Origin', '*')
+            ->setStatusCode(200)
+            ->setJSON([
+                'status'  => 'success',
+                'plan'    => strtoupper($plan),
+                'billing' => ucfirst($billing),
+                'message' => 'Thank you! Your plan activation request has been submitted. Our team will contact you at ' . ($email ?: 'your email address') . ' within 15 minutes to set up your subscription.',
+            ]);
+    }
 }

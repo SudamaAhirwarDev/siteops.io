@@ -279,7 +279,7 @@
         </button>
 
         <!-- Header -->
-        <div class="text-center max-w-xl mx-auto mb-8">
+        <div class="text-center max-w-xl mx-auto mb-6">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200 mb-3">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 Unlock Unlimited Growth
@@ -288,12 +288,23 @@
             <p class="text-xs sm:text-sm text-slate-500 mt-2">
                 Say goodbye to the 5 tasks/day limit. Get non-stop AI SEO audits, continuous review synchronization, and full revenue dunning.
             </p>
+
+            <!-- 1 Month vs 1 Year Billing Cycle Toggle -->
+            <div class="mt-5 inline-flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                <button type="button" id="dash-btn-monthly" onclick="setDashboardBilling('monthly')" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-900 shadow-soft-xs">
+                    1 Month (Monthly)
+                </button>
+                <button type="button" id="dash-btn-annual" onclick="setDashboardBilling('annual')" class="px-4 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1.5">
+                    <span>1 Year (Annual)</span>
+                    <span class="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-1.5 py-0.5 rounded-full border border-emerald-200">Save 20%</span>
+                </button>
+            </div>
         </div>
 
         <!-- Comparison Cards Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
             
-            <!-- Plan 1: Pro Growth ($39/mo) -->
+            <!-- Plan 1: Pro Growth -->
             <div class="bg-gradient-to-b from-indigo-50/60 via-white to-white border-2 border-indigo-600 rounded-3xl p-6 sm:p-7 flex flex-col justify-between relative shadow-soft-md">
                 <div class="absolute -top-3.5 right-6 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider px-3 py-0.5 rounded-full shadow-sm">
                     Most Popular
@@ -306,8 +317,8 @@
                     <p class="text-xs text-slate-500 mt-1">Unlimited tasks for high-converting single websites.</p>
 
                     <div class="mt-5 flex items-baseline gap-1">
-                        <span class="text-3xl sm:text-4xl font-extrabold text-slate-900 font-mono">$39</span>
-                        <span class="text-xs text-slate-500">/ month</span>
+                        <span id="dash-price-pro" class="text-3xl sm:text-4xl font-extrabold text-slate-900 font-mono">$39</span>
+                        <span id="dash-period-pro" class="text-xs text-slate-500">/ month</span>
                     </div>
 
                     <ul class="mt-6 space-y-2.5 text-xs text-slate-700">
@@ -333,15 +344,14 @@
                 </div>
 
                 <div class="mt-6 pt-5 border-t border-slate-100 space-y-2">
-                    <button onclick="simulateUpgrade('pro')" class="w-full py-3 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 shadow-soft-sm transition-all flex items-center justify-center gap-2">
-                        <span>Activate Pro ($39/mo)</span>
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    <button type="button" onclick="openContactActivation('pro')" class="w-full py-3 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 shadow-soft-sm transition-all flex items-center justify-center gap-2">
+                        <span>Contact to Activate Pro &rarr;</span>
                     </button>
-                    <p class="text-[10px] text-center text-slate-400">Instant activation via Lemon Squeezy / Dodo Payments</p>
+                    <p class="text-[10px] text-center text-slate-400">Team activates your domain within 15 minutes</p>
                 </div>
             </div>
 
-            <!-- Plan 2: Agency ($99/mo) -->
+            <!-- Plan 2: Agency Scale -->
             <div class="bg-white border border-slate-200 hover:border-slate-300 rounded-3xl p-6 sm:p-7 flex flex-col justify-between relative shadow-soft-xs transition-all">
                 <div>
                     <div class="flex items-center justify-between">
@@ -351,8 +361,8 @@
                     <p class="text-xs text-slate-500 mt-1">Multi-client compliance and automated audits at scale.</p>
 
                     <div class="mt-5 flex items-baseline gap-1">
-                        <span class="text-3xl sm:text-4xl font-extrabold text-slate-900 font-mono">$99</span>
-                        <span class="text-xs text-slate-500">/ month</span>
+                        <span id="dash-price-agency" class="text-3xl sm:text-4xl font-extrabold text-slate-900 font-mono">$99</span>
+                        <span id="dash-period-agency" class="text-xs text-slate-500">/ month</span>
                     </div>
 
                     <ul class="mt-6 space-y-2.5 text-xs text-slate-700">
@@ -378,11 +388,10 @@
                 </div>
 
                 <div class="mt-6 pt-5 border-t border-slate-100 space-y-2">
-                    <button onclick="simulateUpgrade('agency')" class="w-full py-3 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors flex items-center justify-center gap-2">
-                        <span>Activate Agency ($99/mo)</span>
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    <button type="button" onclick="openContactActivation('agency')" class="w-full py-3 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors flex items-center justify-center gap-2">
+                        <span>Contact to Activate Agency &rarr;</span>
                     </button>
-                    <p class="text-[10px] text-center text-slate-400">Cancel or swap plans anytime with 1-click</p>
+                    <p class="text-[10px] text-center text-slate-400">Custom billing, invoice support &amp; multi-tenant setup</p>
                 </div>
             </div>
 
@@ -400,55 +409,176 @@
     </div>
 </div>
 
+<!-- ================================================================= -->
+<!-- SUBSCRIPTION CONTACT / ACTIVATION MODAL                           -->
+<!-- ================================================================= -->
+<div id="contact-activation-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md hidden transition-opacity duration-300">
+    <div class="relative w-full max-w-lg bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-soft-lg overflow-hidden">
+        <!-- Close Button -->
+        <button type="button" onclick="closeContactActivation()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 p-2 rounded-xl transition-colors">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <div class="text-center mb-5">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold border border-indigo-200 mb-2">
+                <span>💬 Plan Activation &amp; Support</span>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900">Activate <span id="contact-plan-title" class="text-indigo-600">Pro Growth</span></h3>
+            <p class="text-xs text-slate-500 mt-1">
+                Selected: <strong id="contact-plan-billing" class="text-slate-800">1 Month ($39/mo)</strong>. Contact our team to activate this plan for your domain immediately.
+            </p>
+        </div>
+
+        <!-- Success Toast Alert -->
+        <div id="contact-success-toast" class="hidden mb-4 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium">
+            <div class="flex items-center gap-2">
+                <span class="text-emerald-600 font-bold text-base">✓</span>
+                <span id="contact-success-msg">Request sent successfully! Our team will contact you shortly.</span>
+            </div>
+        </div>
+
+        <form id="contact-activation-form" onsubmit="submitContactActivation(event)" class="space-y-3.5">
+            <input type="hidden" id="inquiry-plan" value="pro">
+            <input type="hidden" id="inquiry-billing" value="monthly">
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Your Email</label>
+                <input type="email" id="inquiry-email" required value="<?= esc(session('user_email') ?? '') ?>" placeholder="you@company.com"
+                       class="w-full bg-slate-50/80 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2 text-xs sm:text-sm focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Target Website / Domain</label>
+                <input type="text" id="inquiry-domain" placeholder="e.g. yoursaas.com" value="<?= esc($sites[0]['domain'] ?? '') ?>"
+                       class="w-full bg-slate-50/80 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-mono focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Message or Requirement (Optional)</label>
+                <textarea id="inquiry-message" rows="2" placeholder="Hi team, I would like to activate this plan for our website..."
+                          class="w-full bg-slate-50/80 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2 text-xs sm:text-sm focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20"></textarea>
+            </div>
+
+            <button type="submit" id="btn-submit-contact" class="w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-soft-sm transition-all flex items-center justify-center gap-2">
+                <span>Submit Activation Request</span>
+                <span>&rarr;</span>
+            </button>
+        </form>
+
+        <!-- Direct Contact Alternatives -->
+        <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between gap-3 text-xs text-slate-500">
+            <span>Or contact directly:</span>
+            <a id="contact-mailto-link" href="mailto:support@siteops.io?subject=Subscription%20Activation" class="font-bold text-indigo-600 hover:underline flex items-center gap-1">
+                <span>📧 support@siteops.io</span>
+            </a>
+        </div>
+    </div>
+</div>
+
 <!-- Real-Time AJAX Toggle Script & Upgrade Modal Logic -->
 <script>
-    let csrfHash = document.querySelector('meta[name="csrf-hash"]').getAttribute('content');
-    const csrfName = document.querySelector('meta[name="csrf-token-name"]').getAttribute('content');
+    let currentDashboardBilling = 'monthly';
 
-    function openUpgradeModal() {
-        const modal = document.getElementById('upgrade-modal');
+    function setDashboardBilling(cycle) {
+        currentDashboardBilling = cycle;
+        const btnM = document.getElementById('dash-btn-monthly');
+        const btnA = document.getElementById('dash-btn-annual');
+        const pricePro = document.getElementById('dash-price-pro');
+        const periodPro = document.getElementById('dash-period-pro');
+        const priceAgency = document.getElementById('dash-price-agency');
+        const periodAgency = document.getElementById('dash-period-agency');
+
+        if (cycle === 'annual') {
+            btnA.classList.add('bg-white', 'text-slate-900', 'shadow-soft-xs');
+            btnA.classList.remove('text-slate-600');
+            btnM.classList.remove('bg-white', 'text-slate-900', 'shadow-soft-xs');
+            btnM.classList.add('text-slate-600');
+
+            if (pricePro) pricePro.innerText = '$31';
+            if (periodPro) periodPro.innerText = '/ month (billed $372/yr)';
+            if (priceAgency) priceAgency.innerText = '$79';
+            if (periodAgency) periodAgency.innerText = '/ month (billed $948/yr)';
+        } else {
+            btnM.classList.add('bg-white', 'text-slate-900', 'shadow-soft-xs');
+            btnM.classList.remove('text-slate-600');
+            btnA.classList.remove('bg-white', 'text-slate-900', 'shadow-soft-xs');
+            btnA.classList.add('text-slate-600');
+
+            if (pricePro) pricePro.innerText = '$39';
+            if (periodPro) periodPro.innerText = '/ month';
+            if (priceAgency) priceAgency.innerText = '$99';
+            if (periodAgency) periodAgency.innerText = '/ month';
+        }
+    }
+
+    function openContactActivation(plan) {
+        closeUpgradeModal();
+        const modal = document.getElementById('contact-activation-modal');
+        const title = document.getElementById('contact-plan-title');
+        const billing = document.getElementById('contact-plan-billing');
+        const mailto = document.getElementById('contact-mailto-link');
+        const inquiryPlan = document.getElementById('inquiry-plan');
+        const inquiryBilling = document.getElementById('inquiry-billing');
+
+        const planName = (plan === 'agency') ? 'Agency Scale' : 'Pro Growth';
+        const cycleText = (currentDashboardBilling === 'annual') 
+            ? ((plan === 'agency') ? '1 Year ($79/mo, billed $948/yr)' : '1 Year ($31/mo, billed $372/yr)')
+            : ((plan === 'agency') ? '1 Month ($99/mo)' : '1 Month ($39/mo)');
+
+        if (title) title.innerText = planName;
+        if (billing) billing.innerText = cycleText;
+        if (inquiryPlan) inquiryPlan.value = plan;
+        if (inquiryBilling) inquiryBilling.value = currentDashboardBilling;
+
+        if (mailto) {
+            mailto.href = `mailto:support@siteops.io?subject=Subscription%20Activation%20-%20${encodeURIComponent(planName)}%20(${encodeURIComponent(cycleText)})&body=Hi%20SiteOps%20Team,%0A%0AI%20would%20like%20to%20activate%20the%20${encodeURIComponent(planName)}%20plan%20(${encodeURIComponent(cycleText)})%20for%20my%20website:%0A%0AWebsite:%20${encodeURIComponent(document.getElementById('inquiry-domain')?.value || '')}%0AEmail:%20${encodeURIComponent(document.getElementById('inquiry-email')?.value || '')}%0A%0AThank%20you!`;
+        }
+
         if (modal) modal.classList.remove('hidden');
     }
 
-    function closeUpgradeModal() {
-        const modal = document.getElementById('upgrade-modal');
+    function closeContactActivation() {
+        const modal = document.getElementById('contact-activation-modal');
         if (modal) modal.classList.add('hidden');
     }
 
-    // Auto-open if trial is expired
-    <?php if (isset($trial_status) && $trial_status['is_expired']): ?>
-        document.addEventListener('DOMContentLoaded', function() {
-            openUpgradeModal();
-        });
-    <?php endif; ?>
+    function submitContactActivation(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btn-submit-contact');
+        const origText = btn.innerHTML;
+        btn.innerHTML = 'Sending request...';
+        btn.disabled = true;
 
-    // Interactive 1-Click Upgrade Simulation via Webhook
-    function simulateUpgrade(plan) {
-        const userEmail = "<?= esc(session('email') ?? 'trial@siteops.io') ?>";
-        
-        fetch('<?= site_url('api/webhook/billing') ?>', {
+        const payload = new FormData();
+        payload.append('plan', document.getElementById('inquiry-plan').value);
+        payload.append('billing', document.getElementById('inquiry-billing').value);
+        payload.append('email', document.getElementById('inquiry-email').value);
+        payload.append('domain', document.getElementById('inquiry-domain').value);
+        payload.append('message', document.getElementById('inquiry-message').value);
+
+        fetch('<?= site_url('api/subscription/inquiry') ?>', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                event_type: 'subscription_created',
-                plan: plan,
-                email: userEmail
-            })
+            body: payload
         })
         .then(res => res.json())
         .then(data => {
-            if (data.success) {
-                alert(`🎉 Congratulations! Your account has been upgraded to ${plan.toUpperCase()} with UNLIMITED tasks.`);
-                window.location.reload();
-            } else {
-                alert('Upgrade failed: ' + (data.message || 'Error occurred'));
-            }
+            btn.innerHTML = origText;
+            btn.disabled = false;
+            const toast = document.getElementById('contact-success-toast');
+            const msg = document.getElementById('contact-success-msg');
+            if (msg && data.message) msg.innerText = data.message;
+            if (toast) toast.classList.remove('hidden');
+
+            setTimeout(() => {
+                closeContactActivation();
+                if (toast) toast.classList.add('hidden');
+            }, 3500);
         })
         .catch(err => {
-            console.error(err);
-            alert('Failed to connect to billing webhook receiver.');
+            btn.innerHTML = origText;
+            btn.disabled = false;
+            alert('Your request was received. You can also reach our team at support@siteops.io.');
+            closeContactActivation();
         });
     }
 
