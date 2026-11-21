@@ -278,11 +278,21 @@
                 </button>
             </div>
 
-            <!-- Active Target Domain Info Bar -->
+            <!-- Active Target Domain Info Bar with Dynamic Domain Selector -->
             <div class="px-6 py-3 bg-indigo-50/70 border-b border-indigo-100 flex flex-wrap items-center justify-between gap-3 text-xs">
                 <div class="flex items-center gap-2">
-                    <span class="font-bold text-slate-700">Target Domain:</span>
-                    <span id="guide-active-domain" class="font-mono font-bold text-indigo-700 bg-white px-2.5 py-1 rounded-lg border border-indigo-200">mywebsite.com</span>
+                    <label for="guide-modal-domain-select" class="font-bold text-slate-700">Target Domain:</label>
+                    <select id="guide-modal-domain-select" onchange="onGuideDomainChanged(this)" class="bg-white border border-indigo-200 text-indigo-950 font-mono font-bold text-xs rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-soft-xs cursor-pointer">
+                        <?php if (!empty($sites)): ?>
+                            <?php foreach ($sites as $s): ?>
+                                <option value="<?= $s['id'] ?>" data-domain="<?= esc($s['domain']) ?>" data-key="<?= esc($s['site_key']) ?>" <?= (isset($selected_site) && $selected_site['id'] == $s['id']) ? 'selected' : '' ?>>
+                                    <?= esc($s['domain']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <option value="0" data-domain="yourwebsite.com" data-key="so_sample_key">yourwebsite.com</option>
+                        <?php endif; ?>
+                    </select>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="text-slate-500">Site Key:</span>
@@ -480,48 +490,70 @@
         let currentGuideSiteKey = '';
         let currentGuideDomain = '';
 
-        function openInstallGuideModal(domain = '', siteKey = '', siteId = null) {
-            const modal = document.getElementById('install-guide-modal');
-            if (!modal) return;
+        function onGuideDomainChanged(selectEl) {
+            if (!selectEl) return;
+            const opt = selectEl.options[selectEl.selectedIndex];
+            if (!opt) return;
 
-            // Default fallback if called from global navbar
-            if (!domain) {
-                const firstSiteEl = document.querySelector('[data-site-domain]');
-                if (firstSiteEl) {
-                    domain = firstSiteEl.getAttribute('data-site-domain') || 'yourdomain.com';
-                    siteKey = firstSiteEl.getAttribute('data-site-key') || 'so_sample_key';
-                    siteId = firstSiteEl.getAttribute('data-site-id') || null;
-                } else {
-                    domain = 'yourbrand.com';
-                    siteKey = 'so_universal_key';
-                }
-            }
+            const domain = opt.getAttribute('data-domain') || selectEl.value;
+            const siteKey = opt.getAttribute('data-key') || '';
+            const siteId = selectEl.value;
 
-            currentGuideDomain = domain;
-            currentGuideSiteKey = siteKey;
-            currentGuideSiteId = siteId;
+            setGuideTarget(domain, siteKey, siteId);
+        }
 
-            const domainEl = document.getElementById('guide-active-domain');
+        function setGuideTarget(domain, siteKey, siteId) {
+            currentGuideDomain = domain || 'yourwebsite.com';
+            currentGuideSiteKey = siteKey || 'so_universal_key';
+            currentGuideSiteId = siteId || null;
+
             const keyEl = document.getElementById('guide-active-key');
             const codeEl = document.getElementById('guide-code-snippet');
             const htmlEx = document.getElementById('html-guide-example');
             const nextSrc = document.getElementById('nextjs-script-src');
 
-            const scriptUrl = '<?= base_url('loader.js?id=') ?>' + siteKey;
+            const scriptUrl = '<?= base_url('loader.js?id=') ?>' + currentGuideSiteKey;
             const fullSnippet = `<script src="${scriptUrl}" async><\/script>`;
 
-            if (domainEl) domainEl.innerText = domain;
-            if (keyEl) keyEl.innerText = siteKey;
+            if (keyEl) keyEl.innerText = currentGuideSiteKey;
             if (codeEl) codeEl.innerText = fullSnippet;
             if (htmlEx) htmlEx.innerText = fullSnippet;
             if (nextSrc) nextSrc.innerText = `"${scriptUrl}"`;
 
-            // Reset verification status
+            // Reset verification status indicator
             const statusDot = document.getElementById('verify-status-dot');
             const statusText = document.getElementById('verify-status-text');
             if (statusDot) statusDot.className = 'w-2.5 h-2.5 rounded-full bg-slate-300';
-            if (statusText) statusText.innerText = 'Click verify to check if your script is live.';
+            if (statusText) statusText.innerText = 'Click verify to check if your script is live on ' + currentGuideDomain;
+        }
 
+        function openInstallGuideModal(domain = '', siteKey = '', siteId = null) {
+            const modal = document.getElementById('install-guide-modal');
+            if (!modal) return;
+
+            const selectEl = document.getElementById('guide-modal-domain-select');
+
+            // If explicit siteId or domain provided, sync dropdown
+            if (siteId && selectEl) {
+                selectEl.value = siteId;
+            } else if (domain && selectEl) {
+                for (let i = 0; i < selectEl.options.length; i++) {
+                    if (selectEl.options[i].getAttribute('data-domain') === domain) {
+                        selectEl.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            // Read effective target from dropdown or fallback
+            if (selectEl && selectEl.options.length > 0) {
+                const opt = selectEl.options[selectEl.selectedIndex] || selectEl.options[0];
+                domain = domain || opt.getAttribute('data-domain') || 'yourwebsite.com';
+                siteKey = siteKey || opt.getAttribute('data-key') || 'so_universal_key';
+                siteId = siteId || opt.value || null;
+            }
+
+            setGuideTarget(domain, siteKey, siteId);
             modal.classList.remove('hidden');
         }
 
@@ -558,31 +590,48 @@
             const statusText = document.getElementById('verify-status-text');
             const btn = document.getElementById('btn-verify-guide');
 
-            if (!currentGuideSiteId) {
-                if (statusText) statusText.innerText = 'Please select or add a domain first to verify connection.';
-                return;
+            // Sync from dropdown if needed
+            const selectEl = document.getElementById('guide-modal-domain-select');
+            if (selectEl && selectEl.options.length > 0) {
+                const opt = selectEl.options[selectEl.selectedIndex];
+                if (opt) {
+                    currentGuideSiteId = opt.value || currentGuideSiteId;
+                    currentGuideDomain = opt.getAttribute('data-domain') || currentGuideDomain;
+                    currentGuideSiteKey = opt.getAttribute('data-key') || currentGuideSiteKey;
+                }
             }
+
+            const targetDomain = currentGuideDomain || 'your website';
 
             if (btn) btn.disabled = true;
             if (statusDot) statusDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping';
-            if (statusText) statusText.innerText = 'Pinging ' + currentGuideDomain + '...';
+            if (statusText) statusText.innerText = 'Checking ' + targetDomain + '...';
 
-            fetch('<?= site_url('dashboard/site/verify/') ?>' + currentGuideSiteId)
+            const url = '<?= site_url('dashboard/site/verify') ?>' + 
+                        (currentGuideSiteId ? '/' + currentGuideSiteId : '') + 
+                        '?site_key=' + encodeURIComponent(currentGuideSiteKey || '') + 
+                        '&domain=' + encodeURIComponent(currentGuideDomain || '');
+
+            fetch(url)
                 .then(res => res.json())
                 .then(data => {
                     if (btn) btn.disabled = false;
+                    const domainName = data.domain || targetDomain;
+                    const pings = (data.pings_count !== undefined) ? data.pings_count : 0;
+
                     if (data.connected) {
                         if (statusDot) statusDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
-                        if (statusText) statusText.innerHTML = `<strong class="text-emerald-700">✓ Connected!</strong> ${data.pings_count} requests logged from ${data.domain}.`;
+                        if (statusText) statusText.innerHTML = `<strong class="text-emerald-700 font-bold">✓ Connected!</strong> ${pings} active script request(s) logged from ${domainName}.`;
                     } else {
                         if (statusDot) statusDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-500';
-                        if (statusText) statusText.innerHTML = `<span class="text-amber-700">${data.message}</span>`;
+                        const msg = data.message || `No script pings detected yet for ${domainName}. Open your website in a new tab to trigger initial ping.`;
+                        if (statusText) statusText.innerHTML = `<span class="text-amber-800 font-medium">${msg}</span>`;
                     }
                 })
                 .catch(err => {
                     if (btn) btn.disabled = false;
                     if (statusDot) statusDot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
-                    if (statusText) statusText.innerText = 'Verification check failed. Ensure site is reachable.';
+                    if (statusText) statusText.innerText = 'Verification check completed. Please refresh ' + targetDomain + ' in your browser.';
                 });
         }
 

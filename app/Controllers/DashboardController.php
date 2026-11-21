@@ -172,19 +172,51 @@ class DashboardController extends Controller
     /**
      * AJAX endpoint: Verify if the universal script is installed and active on the site
      */
-    public function verifyInstallation($siteId)
+    public function verifyInstallation($siteId = null)
     {
         $userId = (int) session()->get('user_id');
-        $site = $this->siteModel->getSiteForUser((int) $siteId, $userId);
+
+        if (empty($siteId) || !is_numeric($siteId)) {
+            $siteId = (int) ($this->request->getGet('id') ?? 0);
+        }
+
+        $site = null;
+        if ($siteId > 0) {
+            $site = $this->siteModel->getSiteForUser((int) $siteId, $userId);
+        }
+
+        if (!$site) {
+            $siteKey = trim((string) ($this->request->getGet('site_key') ?? ''));
+            if (!empty($siteKey)) {
+                $site = $this->siteModel->where('site_key', $siteKey)->where('user_id', $userId)->first();
+            }
+        }
+
+        if (!$site) {
+            $domain = trim((string) ($this->request->getGet('domain') ?? ''));
+            if (!empty($domain)) {
+                $site = $this->siteModel->where('domain', $domain)->where('user_id', $userId)->first();
+            }
+        }
+
+        if (!$site) {
+            $userSites = $this->siteModel->getUserSites($userId);
+            if (!empty($userSites)) {
+                $site = $userSites[0];
+            }
+        }
 
         if (!$site) {
             return $this->response->setStatusCode(404)->setJSON([
-                'success' => false,
-                'message' => 'Website not found or unauthorized.',
+                'success'     => false,
+                'connected'   => false,
+                'domain'      => 'Unknown',
+                'pings_count' => 0,
+                'message'     => 'No website found for verification. Please select or add a domain in your dashboard.',
             ]);
         }
 
-        // Check if visitor logs or query logs exist for this domain
+        // Check if visitor logs exist for this domain
         $visitorLogModel = new \App\Models\VisitorLogModel();
         $pingsCount = $visitorLogModel->where('domain', $site['domain'])->countAllResults();
         $lastLog = $visitorLogModel->where('domain', $site['domain'])->orderBy('visited_at', 'DESC')->first();
@@ -196,7 +228,7 @@ class DashboardController extends Controller
             'connected'   => $isConnected,
             'domain'      => $site['domain'],
             'site_key'    => $site['site_key'],
-            'pings_count' => $pingsCount,
+            'pings_count' => (int) $pingsCount,
             'last_seen'   => $lastLog ? date('M d, Y H:i:s', strtotime($lastLog['visited_at'])) : null,
             'message'     => $isConnected 
                 ? "Universal script detected! {$pingsCount} active requests logged from {$site['domain']}."

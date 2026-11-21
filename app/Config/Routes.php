@@ -70,7 +70,8 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->get('dashboard', 'DashboardController::index');
     $routes->post('dashboard/site/create', 'DashboardController::createSite');
     $routes->post('dashboard/module/toggle', 'DashboardController::toggleModule');
-    $routes->get('dashboard/site/verify/(:num)', 'DashboardController::verifyInstallation/$1');
+    $routes->get('dashboard/site/verify', 'DashboardController::verifyInstallation');
+    $routes->get('dashboard/site/verify/(:segment)', 'DashboardController::verifyInstallation/$1');
 
     // Module 02: Social Proof & Reviews Manager
     $routes->get('modules/reviews', 'ReviewsController::index');
