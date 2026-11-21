@@ -94,13 +94,6 @@
                     <span>&rarr;</span>
                 </button>
             </form>
-
-            <!-- Quick Demo Credential Autofill -->
-            <div class="mt-3 pt-3 border-t border-slate-100 text-center">
-                <button type="button" onclick="fillDemoCredentials()" class="text-xs text-indigo-700 hover:text-indigo-800 font-semibold inline-flex items-center gap-1.5 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-xl border border-indigo-200 transition-colors">
-                    <span>⚡ Fill Demo Login (Alex Rivera - Pro)</span>
-                </button>
-            </div>
         </div>
 
         <!-- Footer -->
@@ -109,12 +102,5 @@
             <a href="<?= site_url('register') ?>" class="font-bold text-indigo-600 hover:text-indigo-700 underline">Start 15-Day Free Trial</a>
         </p>
     </div>
-
-    <script>
-        function fillDemoCredentials() {
-            document.getElementById('email').value = 'alex@techfounder.io';
-            document.getElementById('password').value = 'password123';
-        }
-    </script>
 </body>
 </html>

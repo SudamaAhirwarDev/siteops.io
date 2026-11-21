@@ -110,13 +110,6 @@
                     <span>&rarr;</span>
                 </button>
             </form>
-
-            <!-- Quick Master Admin Credential Autofill -->
-            <div class="mt-4 pt-4 border-t border-slate-800 text-center">
-                <button type="button" onclick="fillAdminCredentials()" class="w-full text-xs text-indigo-300 hover:text-indigo-200 font-semibold inline-flex items-center justify-center gap-1.5 bg-indigo-950/60 hover:bg-indigo-900/60 px-3 py-2 rounded-xl border border-indigo-700/50 transition-colors">
-                    <span>⚡ Fill Master Admin (admin@siteops.io / admin123)</span>
-                </button>
-            </div>
         </div>
 
         <!-- Navigation Links -->
@@ -129,12 +122,5 @@
             </a>
         </div>
     </div>
-
-    <script>
-        function fillAdminCredentials() {
-            document.getElementById('email').value = 'admin@siteops.io';
-            document.getElementById('password').value = 'admin123';
-        }
-    </script>
 </body>
 </html>
