@@ -62,15 +62,23 @@ class AuthController extends Controller
                 ->with('error', 'Invalid email address or password. Please try again.');
         }
 
+        $isAdmin = (($user['role'] ?? 'user') === 'admin') || ($email === 'admin@siteops.io');
+
         // Establish authenticated session with current plan status
         session()->set([
             'user_id'       => (int) $user['id'],
             'user_name'     => $user['name'],
             'user_email'    => $user['email'],
+            'user_role'     => $isAdmin ? 'admin' : ($user['role'] ?? 'user'),
+            'is_admin'      => $isAdmin,
             'plan_type'     => $user['plan_type'],
             'trial_ends_at' => $user['trial_ends_at'] ?? null,
             'is_logged_in'  => true,
         ]);
+
+        if ($isAdmin && $this->request->getGet('redirect') === 'admin') {
+            return redirect()->to(site_url('admin'));
+        }
 
         return redirect()->to(site_url('dashboard'))
             ->with('success', 'Welcome back, ' . esc($user['name']) . '!');

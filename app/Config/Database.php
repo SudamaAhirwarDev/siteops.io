@@ -256,121 +256,131 @@ class Database extends Config
      */
     protected function ensureSqliteSchema(string $sqlitePath): void
     {
-        $needsInit = !file_exists($sqlitePath) || filesize($sqlitePath) < 512;
-        if (!$needsInit) {
-            return;
-        }
-
         try {
+            $isNew = !file_exists($sqlitePath) || filesize($sqlitePath) < 512;
             $db = new \SQLite3($sqlitePath);
             $db->busyTimeout(5000);
 
-            // Table 1: users
-            $db->exec("CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                email TEXT NOT NULL UNIQUE,
-                password_hash TEXT NOT NULL,
-                plan_type TEXT NOT NULL DEFAULT 'trial',
-                trial_ends_at DATETIME NULL,
-                stripe_customer_id TEXT NULL,
-                subscription_id TEXT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            )");
+            if ($isNew) {
+                // Table 1: users
+                $db->exec("CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    email TEXT NOT NULL UNIQUE,
+                    password_hash TEXT NOT NULL,
+                    role TEXT NOT NULL DEFAULT 'user',
+                    plan_type TEXT NOT NULL DEFAULT 'trial',
+                    trial_ends_at DATETIME NULL,
+                    stripe_customer_id TEXT NULL,
+                    subscription_id TEXT NULL,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )");
 
-            // Table 2: sites
-            $db->exec("CREATE TABLE IF NOT EXISTS sites (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                domain TEXT NOT NULL,
-                site_key TEXT NOT NULL UNIQUE,
-                module_accessibility INTEGER NOT NULL DEFAULT 1,
-                module_reviews INTEGER NOT NULL DEFAULT 1,
-                module_seo INTEGER NOT NULL DEFAULT 1,
-                module_dunning INTEGER NOT NULL DEFAULT 0,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            )");
+                // Table 2: sites
+                $db->exec("CREATE TABLE IF NOT EXISTS sites (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    domain TEXT NOT NULL,
+                    site_key TEXT NOT NULL UNIQUE,
+                    module_accessibility INTEGER NOT NULL DEFAULT 1,
+                    module_reviews INTEGER NOT NULL DEFAULT 1,
+                    module_seo INTEGER NOT NULL DEFAULT 1,
+                    module_dunning INTEGER NOT NULL DEFAULT 0,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )");
 
-            // Table 3: reviews
-            $db->exec("CREATE TABLE IF NOT EXISTS reviews (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                site_id INTEGER NOT NULL,
-                reviewer_name TEXT NOT NULL,
-                role_or_company TEXT NULL,
-                rating INTEGER NOT NULL DEFAULT 5,
-                review_text TEXT NOT NULL,
-                source TEXT NOT NULL DEFAULT 'custom',
-                is_active INTEGER NOT NULL DEFAULT 1,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            )");
+                // Table 3: reviews
+                $db->exec("CREATE TABLE IF NOT EXISTS reviews (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    site_id INTEGER NOT NULL,
+                    reviewer_name TEXT NOT NULL,
+                    role_or_company TEXT NULL,
+                    rating INTEGER NOT NULL DEFAULT 5,
+                    review_text TEXT NOT NULL,
+                    source TEXT NOT NULL DEFAULT 'custom',
+                    is_active INTEGER NOT NULL DEFAULT 1,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )");
 
-            // Table 4: seo_audits
-            $db->exec("CREATE TABLE IF NOT EXISTS seo_audits (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                site_id INTEGER NOT NULL,
-                page_url TEXT NOT NULL,
-                seo_score INTEGER NOT NULL,
-                geo_ai_score INTEGER NOT NULL,
-                recommendations_json TEXT NOT NULL,
-                audited_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            )");
+                // Table 4: seo_audits
+                $db->exec("CREATE TABLE IF NOT EXISTS seo_audits (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    site_id INTEGER NOT NULL,
+                    page_url TEXT NOT NULL,
+                    seo_score INTEGER NOT NULL,
+                    geo_ai_score INTEGER NOT NULL,
+                    recommendations_json TEXT NOT NULL,
+                    audited_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )");
 
-            // Table 5: dunning_logs
-            $db->exec("CREATE TABLE IF NOT EXISTS dunning_logs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                site_id INTEGER NOT NULL,
-                customer_email TEXT NOT NULL,
-                amount REAL NOT NULL,
-                currency TEXT NOT NULL DEFAULT 'USD',
-                status TEXT NOT NULL DEFAULT 'pending',
-                sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            )");
+                // Table 5: dunning_logs
+                $db->exec("CREATE TABLE IF NOT EXISTS dunning_logs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    site_id INTEGER NOT NULL,
+                    customer_email TEXT NOT NULL,
+                    amount REAL NOT NULL,
+                    currency TEXT NOT NULL DEFAULT 'USD',
+                    status TEXT NOT NULL DEFAULT 'pending',
+                    sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )");
 
-            // Table 6: daily_usage_logs
-            $db->exec("CREATE TABLE IF NOT EXISTS daily_usage_logs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                task_type TEXT NOT NULL DEFAULT 'seo_audit',
-                usage_date TEXT NOT NULL,
-                task_count INTEGER NOT NULL DEFAULT 0,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE (user_id, usage_date)
-            )");
+                // Table 6: daily_usage_logs
+                $db->exec("CREATE TABLE IF NOT EXISTS daily_usage_logs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    task_type TEXT NOT NULL DEFAULT 'seo_audit',
+                    usage_date TEXT NOT NULL,
+                    task_count INTEGER NOT NULL DEFAULT 0,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE (user_id, usage_date)
+                )");
 
-            // Insert default demo & test users (all with password: password123)
-            $passwordHash = password_hash('password123', PASSWORD_BCRYPT);
-            
-            // 1. Alex Rivera (Pro user - matches "Fill Demo Login" button)
-            $db->exec("INSERT OR IGNORE INTO users (id, name, email, password_hash, plan_type, trial_ends_at) 
-                       VALUES (1, 'Alex Rivera', 'alex@techfounder.io', '{$passwordHash}', 'pro', NULL)");
+                // Insert default demo & test users (all with password: password123)
+                $passwordHash = password_hash('password123', PASSWORD_BCRYPT);
+                
+                // 1. Alex Rivera (Pro user - matches "Fill Demo Login" button)
+                $db->exec("INSERT OR IGNORE INTO users (id, name, email, password_hash, role, plan_type, trial_ends_at) 
+                           VALUES (1, 'Alex Rivera', 'alex@techfounder.io', '{$passwordHash}', 'user', 'pro', NULL)");
 
-            // 2. Demo User
-            $db->exec("INSERT OR IGNORE INTO users (id, name, email, password_hash, plan_type, trial_ends_at) 
-                       VALUES (2, 'SiteOps Founder', 'demo@siteops.io', '{$passwordHash}', 'trial', datetime('now', '+15 days'))");
+                // 2. Demo User
+                $db->exec("INSERT OR IGNORE INTO users (id, name, email, password_hash, role, plan_type, trial_ends_at) 
+                           VALUES (2, 'SiteOps Founder', 'demo@siteops.io', '{$passwordHash}', 'user', 'trial', datetime('now', '+15 days'))");
 
-            // 3. Trial User
-            $db->exec("INSERT OR IGNORE INTO users (id, name, email, password_hash, plan_type, trial_ends_at) 
-                       VALUES (3, 'Trial User', 'trial@siteops.io', '{$passwordHash}', 'trial', datetime('now', '+15 days'))");
+                // 3. Trial User
+                $db->exec("INSERT OR IGNORE INTO users (id, name, email, password_hash, role, plan_type, trial_ends_at) 
+                           VALUES (3, 'Trial User', 'trial@siteops.io', '{$passwordHash}', 'user', 'trial', datetime('now', '+15 days'))");
 
-            // Insert default demo site (so_9f81a7b2e4c6) for Alex
-            $db->exec("INSERT OR IGNORE INTO sites (id, user_id, domain, site_key, module_accessibility, module_reviews, module_seo, module_dunning) 
-                       VALUES (1, 1, 'mysaas.com', 'so_9f81a7b2e4c6', 1, 1, 1, 1)");
+                // Insert default demo site (so_9f81a7b2e4c6) for Alex
+                $db->exec("INSERT OR IGNORE INTO sites (id, user_id, domain, site_key, module_accessibility, module_reviews, module_seo, module_dunning) 
+                           VALUES (1, 1, 'mysaas.com', 'so_9f81a7b2e4c6', 1, 1, 1, 1)");
 
-            // Insert default demo site for Demo user
-            $db->exec("INSERT OR IGNORE INTO sites (id, user_id, domain, site_key, module_accessibility, module_reviews, module_seo, module_dunning) 
-                       VALUES (2, 2, 'siteops.io', 'so_demo89012345', 1, 1, 1, 1)");
+                // Insert default demo site for Demo user
+                $db->exec("INSERT OR IGNORE INTO sites (id, user_id, domain, site_key, module_accessibility, module_reviews, module_seo, module_dunning) 
+                           VALUES (2, 2, 'siteops.io', 'so_demo89012345', 1, 1, 1, 1)");
 
-            // Insert default verified reviews for so_9f81a7b2e4c6
-            $db->exec("INSERT OR IGNORE INTO reviews (id, site_id, reviewer_name, role_or_company, rating, review_text, source, is_active) 
-                       VALUES 
-                       (1, 1, 'Marcus Lindqvist', 'Founder, NordicStack', 5, 'SiteOps replaced our $49/mo accessibility widget and bloated review plugin with a 12KB script. Core Web Vitals jumped 19 pts.', 'trustpilot', 1),
-                       (2, 1, 'Elena Rostova', 'Head of Growth, FinFlow EU', 5, 'European Accessibility Act (EAA 2025) compliance handled in 2 minutes. The auto alt-tag fixer is genius.', 'google', 1),
-                       (3, 1, 'David Miller', 'CTO, CloudOps Agency', 5, 'Recovered $4,200 in failed Stripe subscriptions in our first 30 days. Paid for itself 100x over.', 'custom', 1)");
+                // Insert default verified reviews for so_9f81a7b2e4c6
+                $db->exec("INSERT OR IGNORE INTO reviews (id, site_id, reviewer_name, role_or_company, rating, review_text, source, is_active) 
+                           VALUES 
+                           (1, 1, 'Marcus Lindqvist', 'Founder, NordicStack', 5, 'SiteOps replaced our $49/mo accessibility widget and bloated review plugin with a 12KB script. Core Web Vitals jumped 19 pts.', 'trustpilot', 1),
+                           (2, 1, 'Elena Rostova', 'Head of Growth, FinFlow EU', 5, 'European Accessibility Act (EAA 2025) compliance handled in 2 minutes. The auto alt-tag fixer is genius.', 'google', 1),
+                           (3, 1, 'David Miller', 'CTO, CloudOps Agency', 5, 'Recovered $4,200 in failed Stripe subscriptions in our first 30 days. Paid for itself 100x over.', 'custom', 1)");
+            }
+
+            // Always ensure 'role' column exists in users table
+            try {
+                $db->exec("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'");
+            } catch (\Throwable $e) {}
+
+            // Always ensure master admin user exists (admin@siteops.io / admin123)
+            $adminHash = password_hash('admin123', PASSWORD_BCRYPT);
+            $db->exec("INSERT OR IGNORE INTO users (id, name, email, password_hash, role, plan_type) 
+                       VALUES (999, 'Master Administrator', 'admin@siteops.io', '{$adminHash}', 'admin', 'enterprise')");
+            $db->exec("UPDATE users SET role = 'admin' WHERE email = 'admin@siteops.io'");
 
             $db->close();
         } catch (\Throwable $e) {

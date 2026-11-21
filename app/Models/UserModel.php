@@ -16,6 +16,7 @@ class UserModel extends Model
         'name',
         'email',
         'password_hash',
+        'role',
         'plan_type',
         'trial_ends_at',
         'stripe_customer_id',

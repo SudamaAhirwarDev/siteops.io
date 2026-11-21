@@ -32,6 +32,25 @@ $routes->get('register', 'AuthController::getRegister');
 $routes->post('register', 'AuthController::postRegister');
 $routes->get('logout', 'AuthController::getLogout');
 
+// Master Administration Portal Routes
+$routes->get('admin', 'AdminController::index', ['filter' => 'admin']);
+$routes->get('admin/login', 'AdminController::login');
+$routes->post('admin/login', 'AdminController::attemptLogin');
+$routes->get('admin/logout', 'AdminController::logout');
+
+$routes->group('admin', ['filter' => 'admin'], static function ($routes) {
+    $routes->get('dashboard', 'AdminController::index');
+    $routes->post('user/create', 'AdminController::createUser');
+    $routes->post('user/update-plan', 'AdminController::updateUserPlan');
+    $routes->post('user/delete/(:num)', 'AdminController::deleteUser/$1');
+    $routes->get('user/impersonate/(:num)', 'AdminController::impersonateUser/$1');
+    $routes->post('site/toggle-module', 'AdminController::toggleSiteModule');
+    $routes->post('site/delete/(:num)', 'AdminController::deleteSite/$1');
+    $routes->get('review/toggle/(:num)', 'AdminController::toggleReview/$1');
+    $routes->post('review/delete/(:num)', 'AdminController::deleteReview/$1');
+    $routes->post('system/quick-scan', 'AdminController::quickScan');
+});
+
 // Stripe Webhook Receiver (Exempt from CSRF)
 $routes->post('api/webhook/stripe/(:segment)', 'ApiController::stripeWebhook/$1');
 // Also support GET simulation for quick testing in browser/Postman

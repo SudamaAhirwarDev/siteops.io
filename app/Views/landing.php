@@ -1840,6 +1840,8 @@
                         256-bit Encrypted
                     </span>
                     <span class="text-slate-700">|</span>
+                    <a href="<?= site_url('admin') ?>" class="hover:text-indigo-400 transition-colors font-mono text-[10px]">Admin Portal</a>
+                    <span class="text-slate-700">|</span>
                     <a href="<?= site_url('dashboard') ?>" class="text-indigo-400 hover:text-indigo-300 font-bold">Client Dashboard &rarr;</a>
                 </div>
             </div>

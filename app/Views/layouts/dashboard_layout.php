@@ -99,6 +99,12 @@
 
             <!-- User Menu & Mobile Controls -->
             <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+                <?php if (session()->get('is_admin') || session()->get('user_role') === 'admin' || session()->get('is_impersonating')): ?>
+                    <a href="<?= site_url('admin') ?>" class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1.5 rounded-lg bg-indigo-950 text-indigo-200 border border-indigo-700/60 hover:bg-slate-900 transition-colors shadow-soft-xs">
+                        <span>🛡️ Admin Panel</span>
+                    </a>
+                <?php endif; ?>
+
                 <a href="<?= site_url('/') ?>" target="_blank" class="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-soft-xs hover:border-slate-300">
                     <span>Landing Page</span>
                     <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -167,6 +173,12 @@
                     <span class="text-emerald-600 font-bold">$</span>
                     <span>Stripe Dunning</span>
                 </a>
+                <?php if (session()->get('is_admin') || session()->get('user_role') === 'admin' || session()->get('is_impersonating')): ?>
+                    <a href="<?= site_url('admin') ?>" class="p-2.5 rounded-xl border flex items-center gap-2.5 bg-indigo-950 border-indigo-800 text-indigo-200 font-bold sm:col-span-2">
+                        <span>🛡️</span>
+                        <span>Master Admin Control</span>
+                    </a>
+                <?php endif; ?>
             </div>
 
             <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">

@@ -91,4 +91,12 @@ class DiagnosticController extends Controller
             ->setHeader('Content-Type', 'application/json')
             ->setJSON($result);
     }
+
+    /**
+     * Direct Internal Scan Execution Helper for Controllers
+     */
+    public function executeInternalScan(string $url): array
+    {
+        return $this->diagnosticService->scan($url);
+    }
 }
