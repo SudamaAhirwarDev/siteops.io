@@ -30,35 +30,47 @@ class SeoController extends Controller
      */
     public function index($siteId = null)
     {
-        $userId = (int) session()->get('user_id');
-        $sites  = $this->siteModel->getUserSites($userId);
+        try {
+            $userId = (int) session()->get('user_id');
+            $sites  = $this->siteModel->getUserSites($userId);
 
-        if (empty($sites)) {
+            if (empty($sites)) {
+                return redirect()->to(site_url('dashboard'))
+                    ->with('error', 'Please add a website before running audits.');
+            }
+
+            // Selected site
+            $selectedSite = null;
+            if ($siteId !== null) {
+                $selectedSite = $this->siteModel->getSiteForUser((int) $siteId, $userId);
+            }
+            if (!$selectedSite) {
+                $selectedSite = $sites[0];
+            }
+
+            $recentAudits = [];
+            try {
+                $recentAudits = $this->seoAuditModel->getSiteAudits((int) $selectedSite['id'], 8);
+            } catch (\Throwable $e) {
+                $recentAudits = [];
+            }
+
+            $latestAudit  = !empty($recentAudits) ? $recentAudits[0] : null;
+            $trialStatus  = (new \App\Services\UsageService())->getTrialStatus($userId);
+
+            return view('modules/seo', [
+                'page_title'    => 'AI SEO & GEO Auditor — SiteOps',
+                'sites'         => $sites,
+                'selected_site' => $selectedSite,
+                'recent_audits' => $recentAudits,
+                'latest_audit'  => $latestAudit,
+                'trial_status'  => $trialStatus,
+            ]);
+        } catch (\Throwable $e) {
+            log_message('error', 'SeoController::index error: ' . $e->getMessage());
             return redirect()->to(site_url('dashboard'))
-                ->with('error', 'Please add a website before running audits.');
+                ->with('error', 'Unable to load SEO module. Please try again.');
         }
-
-        // Selected site
-        $selectedSite = null;
-        if ($siteId !== null) {
-            $selectedSite = $this->siteModel->getSiteForUser((int) $siteId, $userId);
-        }
-        if (!$selectedSite) {
-            $selectedSite = $sites[0];
-        }
-
-        $recentAudits = $this->seoAuditModel->getSiteAudits((int) $selectedSite['id'], 8);
-        $latestAudit  = !empty($recentAudits) ? $recentAudits[0] : null;
-        $trialStatus  = (new \App\Services\UsageService())->getTrialStatus($userId);
-
-        return view('modules/seo', [
-            'page_title'    => 'AI SEO & GEO Auditor — SiteOps',
-            'sites'         => $sites,
-            'selected_site' => $selectedSite,
-            'recent_audits' => $recentAudits,
-            'latest_audit'  => $latestAudit,
-            'trial_status'  => $trialStatus,
-        ]);
     }
 
     /**
@@ -66,63 +78,74 @@ class SeoController extends Controller
      */
     public function analyze()
     {
-        $userId = (int) session()->get('user_id');
+        try {
+            $userId = (int) session()->get('user_id');
 
-        $rules = [
-            'site_id'  => 'required|is_natural_no_zero',
-            'page_url' => 'required|valid_url',
-        ];
+            $rules = [
+                'site_id'  => 'required|is_natural_no_zero',
+                'page_url' => 'required|valid_url',
+            ];
 
-        if (!$this->validate($rules)) {
+            if (!$this->validate($rules)) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Please provide a valid, well-formed URL (e.g., https://example.com).');
+            }
+
+            $siteId  = (int) $this->request->getPost('site_id');
+            $pageUrl = trim($this->request->getPost('page_url'));
+
+            $site = $this->siteModel->getSiteForUser($siteId, $userId);
+            if (!$site) {
+                return redirect()->to(site_url('modules/seo'))
+                    ->with('error', 'Unauthorized site access.');
+            }
+
+            // Trial & Daily Task Limit Guard Check
+            $usageService = new \App\Services\UsageService();
+            $usageCheck = $usageService->canExecuteTask($userId, 'seo_audit', true);
+            if (!$usageCheck['allowed']) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', $usageCheck['message']);
+            }
+
+            // Run scraper
+            $crawlResult = $this->scrapeWebpage($pageUrl);
+            if (!$crawlResult['success']) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Scraper failed to fetch URL: ' . esc($crawlResult['error']));
+            }
+
+            // Compute Technical SEO & Generative AI Scores
+            $scoresAndFixes = $this->calculateScoresAndChecklist($crawlResult['data'], $pageUrl);
+
+            // Optional AI Hook for Gemini / OpenAI
+            $aiEnrichedFixes = $this->runAiEnrichment($scoresAndFixes['checklist'], $crawlResult['data']);
+
+            // Persist to database
+            try {
+                $this->seoAuditModel->insert([
+                    'site_id'              => $siteId,
+                    'page_url'             => $pageUrl,
+                    'seo_score'            => $scoresAndFixes['seo_score'],
+                    'geo_ai_score'         => $scoresAndFixes['geo_ai_score'],
+                    'recommendations_json' => json_encode($aiEnrichedFixes),
+                    'audited_at'           => date('Y-m-d H:i:s'),
+                ]);
+            } catch (\Throwable $dbErr) {
+                log_message('error', 'Failed saving seo audit: ' . $dbErr->getMessage());
+            }
+
+            return redirect()->to(site_url('modules/seo/' . $siteId))
+                ->with('success', 'Audit completed! Scores: Technical SEO ' . $scoresAndFixes['seo_score'] . '/100 | AI GEO ' . $scoresAndFixes['geo_ai_score'] . '/100.');
+        } catch (\Throwable $e) {
+            log_message('error', 'SeoController::analyze error: ' . $e->getMessage());
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Please provide a valid, well-formed URL (e.g., https://example.com).');
+                ->with('error', 'Audit encountered an error: ' . esc($e->getMessage()));
         }
-
-        $siteId  = (int) $this->request->getPost('site_id');
-        $pageUrl = trim($this->request->getPost('page_url'));
-
-        $site = $this->siteModel->getSiteForUser($siteId, $userId);
-        if (!$site) {
-            return redirect()->to(site_url('modules/seo'))
-                ->with('error', 'Unauthorized site access.');
-        }
-
-        // Trial & Daily Task Limit Guard Check
-        $usageService = new \App\Services\UsageService();
-        $usageCheck = $usageService->canExecuteTask($userId, 'seo_audit', true);
-        if (!$usageCheck['allowed']) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', $usageCheck['message']);
-        }
-
-        // Run scraper
-        $crawlResult = $this->scrapeWebpage($pageUrl);
-        if (!$crawlResult['success']) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Scraper failed to fetch URL: ' . esc($crawlResult['error']));
-        }
-
-        // Compute Technical SEO & Generative AI Scores
-        $scoresAndFixes = $this->calculateScoresAndChecklist($crawlResult['data'], $pageUrl);
-
-        // Optional AI Hook for Gemini / OpenAI
-        $aiEnrichedFixes = $this->runAiEnrichment($scoresAndFixes['checklist'], $crawlResult['data']);
-
-        // Persist to database
-        $auditId = $this->seoAuditModel->insert([
-            'site_id'              => $siteId,
-            'page_url'             => $pageUrl,
-            'seo_score'            => $scoresAndFixes['seo_score'],
-            'geo_ai_score'         => $scoresAndFixes['geo_ai_score'],
-            'recommendations_json' => json_encode($aiEnrichedFixes),
-            'audited_at'           => date('Y-m-d H:i:s'),
-        ]);
-
-        return redirect()->to(site_url('modules/seo/' . $siteId))
-            ->with('success', 'Audit completed! Scores: Technical SEO ' . $scoresAndFixes['seo_score'] . '/100 | AI GEO ' . $scoresAndFixes['geo_ai_score'] . '/100.');
     }
 
     /**
