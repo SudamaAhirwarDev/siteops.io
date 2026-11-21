@@ -34,7 +34,7 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col items-center justify-center py-6 px-4 selection:bg-brand-500 selection:text-white relative">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col items-center justify-center py-4 sm:py-6 px-4 selection:bg-brand-500 selection:text-white relative">
 
     <!-- Ambient Calm Glow -->
     <div class="fixed -top-40 -left-40 w-96 h-96 bg-indigo-100/60 rounded-full blur-3xl pointer-events-none"></div>
@@ -42,20 +42,20 @@
 
     <div class="w-full max-w-md relative z-10 my-auto">
         <!-- Brand Header -->
-        <div class="text-center mb-4">
-            <a href="<?= site_url('/') ?>" class="inline-flex items-center gap-2.5 group">
-                <div class="relative w-9 h-9 transition-transform group-hover:scale-105 shrink-0">
+        <div class="text-center mb-3">
+            <a href="<?= site_url('/') ?>" class="inline-flex items-center gap-2 group">
+                <div class="relative w-8 h-8 transition-transform group-hover:scale-105 shrink-0">
                     <img src="<?= base_url('assets/images/logo-icon.svg') ?>" alt="SiteOps Logo" class="w-full h-full drop-shadow-[0_4px_12px_rgba(79,70,229,0.35)]">
                 </div>
                 <span class="text-xl font-extrabold tracking-tight text-slate-900">SiteOps<span class="text-indigo-600">.</span></span>
             </a>
-            <h1 class="text-xl font-bold text-slate-900 mt-2">Start 15-Day Free Trial</h1>
+            <h1 class="text-lg sm:text-xl font-bold text-slate-900 mt-1">Start 15-Day Free Trial</h1>
             <p class="text-xs text-slate-500 mt-0.5">Universal &lt;15KB growth &amp; compliance script</p>
         </div>
 
         <!-- Errors -->
         <?php if (session()->getFlashdata('errors')): ?>
-            <div class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs mb-3 shadow-soft-xs">
+            <div class="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs mb-3 shadow-soft-xs">
                 <ul class="list-disc list-inside space-y-0.5">
                     <?php foreach (session()->getFlashdata('errors') as $err): ?>
                         <li><?= esc($err) ?></li>
@@ -65,41 +65,41 @@
         <?php endif; ?>
 
         <!-- Register Card -->
-        <div class="bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-soft-lg relative">
-            <form action="<?= site_url('register') ?>" method="POST" class="space-y-3">
+        <div class="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-6 shadow-soft-lg relative">
+            <form action="<?= site_url('register') ?>" method="POST" class="space-y-2.5 sm:space-y-3">
                 <?= csrf_field() ?>
 
                 <div>
                     <label for="name" class="block text-xs font-semibold text-slate-700 mb-1">Full Name</label>
                     <input type="text" id="name" name="name" value="<?= old('name') ?>" required autofocus
-                           class="w-full bg-slate-50/70 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2 text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                           class="w-full bg-slate-50/70 border border-slate-200 text-slate-900 rounded-xl px-3 py-1.5 sm:py-2 text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                            placeholder="Sarah Connor">
                 </div>
 
                 <div>
                     <label for="email" class="block text-xs font-semibold text-slate-700 mb-1">Work Email</label>
                     <input type="email" id="email" name="email" value="<?= old('email') ?>" required
-                           class="w-full bg-slate-50/70 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2 text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                           class="w-full bg-slate-50/70 border border-slate-200 text-slate-900 rounded-xl px-3 py-1.5 sm:py-2 text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                            placeholder="sarah@company.com">
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-2.5">
                     <div>
                         <label for="password" class="block text-xs font-semibold text-slate-700 mb-1">Password</label>
                         <input type="password" id="password" name="password" required minlength="6"
-                               class="w-full bg-slate-50/70 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2 text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                               class="w-full bg-slate-50/70 border border-slate-200 text-slate-900 rounded-xl px-3 py-1.5 sm:py-2 text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                placeholder="Min 6 chars">
                     </div>
 
                     <div>
-                        <label for="password_confirm" class="block text-xs font-semibold text-slate-700 mb-1">Confirm Password</label>
+                        <label for="password_confirm" class="block text-xs font-semibold text-slate-700 mb-1">Confirm</label>
                         <input type="password" id="password_confirm" name="password_confirm" required minlength="6"
-                               class="w-full bg-slate-50/70 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2 text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                               class="w-full bg-slate-50/70 border border-slate-200 text-slate-900 rounded-xl px-3 py-1.5 sm:py-2 text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                placeholder="Re-enter">
                     </div>
                 </div>
 
-                <div class="pt-1.5">
+                <div class="pt-1">
                     <button type="submit" class="w-full py-2.5 px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 shadow-soft-sm transition-all flex items-center justify-center gap-1.5">
                         <span>Create Free Account</span>
                         <span>&rarr;</span>
@@ -107,13 +107,13 @@
                 </div>
             </form>
 
-            <div class="mt-3 text-center">
+            <div class="mt-2.5 text-center">
                 <span class="text-[11px] text-slate-400">15-Day Free Trial &bull; 5 Tasks/Day &bull; No card required</span>
             </div>
         </div>
 
         <!-- Footer -->
-        <p class="text-center text-xs text-slate-500 mt-4">
+        <p class="text-center text-xs text-slate-500 mt-3">
             Already have an account? 
             <a href="<?= site_url('login') ?>" class="font-bold text-indigo-600 hover:text-indigo-700 underline">Sign in</a>
         </p>
