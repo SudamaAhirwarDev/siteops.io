@@ -178,9 +178,11 @@ class App extends BaseConfig
      *         '192.168.5.0/24' => 'X-Real-IP',
      *     ]
      *
-     * @var array<string, string>|string
+     * @var array<string, string>
      */
-    public array|string $proxyIPs = '*';
+    public array $proxyIPs = [
+        '0.0.0.0/0' => 'X-Forwarded-For',
+    ];
 
     /**
      * --------------------------------------------------------------------------
