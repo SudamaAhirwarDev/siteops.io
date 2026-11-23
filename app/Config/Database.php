@@ -435,6 +435,10 @@ class Database extends Config
                            VALUES (4, 'Nitin Mandle', 'nitinmandle3@gmail.com', '{$passwordHash}', 'user', 'trial', datetime('now', '+15 days'))");
                 $db->exec("INSERT OR IGNORE INTO sites (id, user_id, domain, site_key, module_accessibility, module_reviews, module_seo, module_dunning) 
                            VALUES (4, 4, 'aiorbit.kesug.com', 'so_ef1c411ebccb0', 1, 1, 1, 0)");
+                $db->exec("INSERT OR IGNORE INTO reviews (id, site_id, reviewer_name, role_or_company, rating, review_text, source, is_active) 
+                           VALUES 
+                           (41, 4, 'Alex Rivera', 'Digital Lead', 5, 'Site loaded 30% faster and all accessibility contrast & font issues resolved.', 'trustpilot', 1),
+                           (42, 4, 'Sarah Chen', 'Product Manager', 5, 'EAA 2025 compliance and alt tags fixed automatically.', 'google', 1)");
                 $db->exec("INSERT OR IGNORE INTO visitor_logs (domain, site_id, page_url, ip_address, device_type, visited_at)
                            VALUES ('aiorbit.kesug.com', 4, '/api/config/so_ef1c411ebccb0', '185.27.134.135', 'desktop', datetime('now'))");
             } catch (\Throwable $e) {}
